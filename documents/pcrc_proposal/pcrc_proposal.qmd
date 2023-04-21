@@ -1,0 +1,65 @@
+---
+title: "The Association of Guideline Directed Prophylaxis with the Incidence of Postoperative Nausea and Vomiting in Pediatric Patients"
+subtitle: "A Multicenter Retrospective Observational Cohort Study"
+short-title: "Pediatric PONV Prophylaxis"
+author:
+  - name: "Benjamin Y. Andrew, MD, MHS"
+    affiliation: "Duke University School of Medicine, Department of Anesthesiology"
+    orcid: "0000-0003-1586-1658"
+    attributes:
+      corresponding: true
+  - name: "Lucy Everett, MD"
+    affiliation: "Massachucsetts General Hospital, Department of Anesthesia, Critical Care and Pain Medicine"
+  - name: "T. Wesley Templeton, MD"
+    affiliation: "Wake Forest University School of Medicine, Department of Anesthesiology"
+  - name: "Lisa N. Vitale, MD"
+    affiliation: "University of Michigan, Department of Anesthesiology"
+  - name: "Vikas O'Reilly-Shah, MD, PhD"
+    affiliation: "University of Washington, Department of Anesthesiology and Pain Medicine"
+  - name: "Meredith Bailey, MSN, RN"
+    affiliation: "Multicenter Perioperative Outcomes Group"
+  - name: "Ashraf Habib, MBBCh, MHS"
+    affiliation: "Duke University School of Medicine, Department of Anesthesiology"
+  - name: "Brad Taicher, DO, MBA"
+    affiliation: "Duke University School of Medicine, Department of Anesthesiology"
+abstract: |-
+  Postoperative nausea and vomiting (PONV) is a frequent complication following general anesthesia in pediatric patients. Further, PONV is associated with a number of negative patient outcomes including dehydration, pulmonary aspiration, delayed mobilization, risk for wound dehiscence, delayed discharge, and unanticipated hospital admission. Given its high incidence and associated costly outcomes, a systematic approach to reducing PONV through appropriate prophylaxis represents a key opportunity for optimization of patient care. Consensus guidelines for prophylaxis against PONV in pediatric patients recommend a risk-based approach, with escalation in the number of antiemetics based on a preoperative estimate of PONV risk. These recommendations have been translated into performance metrics, most notably by the Multicenter Perioperative Outcomes Group (MPOG) through the Anesthesiology Performance Improvement and Reporting Exchange (ASPIRE), which currently includes over 25 children’s hospitals Despite widespread dissemination of the guideline-defined quality metric for PONV prophylaxis, the association between adherence to such a risk-based approach and clinical outcomes remains unknown. Further, while the consensus guidelines are based on a comprehensive collation of evidence surrounding PONV risk prediction and prophylaxis, this evidence base is not robust. Most notably, risk prediction in pediatric PONV is sparsely studied, and available risk models utilize suboptimal methods that leave them prone to misclassification and bias. Thus, it is important to objectively estimate how published national guidelines, based on the current landscape of pediatric PONV risk prediction, are associated with clinical outcomes.
+code-repo: "Replication materials for this manuscript are available at <https://github.com/ajnafa/Latent-Bayesian-MSM/tree/apsa-paper>"
+thanks: |-
+  This manuscript was prepared for the American Political Science Association's Annual Meeting in Montreal, Quebec, September 15--18, 2022.
+date: September 9, 2022
+keywords: 
+  - Bayesian statistics
+  - causal inference
+  - panel data
+format: 
+  hikmah-pdf:
+    fontsize: 12pt
+    monofontoptions: 
+      - "Mapping=tex-ansi"
+      - "Scale=MatchLowercase"
+    # Colors
+    include-in-header: 
+      text: |
+        \definecolor{untgreen}{HTML}{00853E}
+    linkcolor: untgreen
+    urlcolor: untgreen
+    citecolor: untgreen
+    knitr:
+      opts_chunk:
+        fig.retina: 1
+  html: default
+fig-cap-location: top
+
+knitr:
+  opts_chunk:
+    echo: false
+    warning: false
+    message: false
+    fig.retina: 3
+    fig.path: "figures/"
+    cache.path: "_cache/"
+---
+```
+Testing. 
+```
