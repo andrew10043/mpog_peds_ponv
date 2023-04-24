@@ -35,7 +35,7 @@ keywords:
 bibliography: "../../assets/references.bib"
 format: 
   hikmah-pdf:
-    fig-pos: 'h'
+    fig-pos: 'H'
     fontsize: 11pt
 
     # Custom fonts
@@ -81,6 +81,45 @@ knitr:
     fig.path: "figures/"
     cache.path: "_cache/"
 ---
+
+```{r plot-settings}
+library(ggdag)
+library(MetBrewer)
+library(showtext)
+library(sysfonts)
+library(ggplot2)
+library(tidybayes)
+library(ggsci)
+library(cowplot)
+library(tidytext)
+
+sysfonts::font_add_google("Archivo Narrow", family = "Archivo Narrow")
+sysfonts::font_add_google("Pragati Narrow", family = "Pragati Narrow")
+showtext::showtext_auto()
+
+isfahan <- MetBrewer::met.brewer("Isfahan1")
+degas <- MetBrewer::met.brewer("Degas")
+
+theme_nice <- function() {
+  theme_minimal(base_family = "Archivo Narrow") +
+    theme(panel.grid.minor = element_blank(),
+          plot.background = element_rect(fill = "white", color = NA),
+          plot.title = element_text(face = "bold"),
+          axis.title = element_text(face = "bold"),
+          strip.text = element_text(face = "bold", size = rel(0.8), hjust = 0),
+          strip.background = element_rect(fill = "grey80", color = NA),
+          legend.title = element_text(face = "bold"))
+}
+
+theme_set(
+  theme_nice()
+)
+
+update_geom_defaults("label", 
+                     list(family = "Archivo Narrow",
+                          fontface = "bold"))
+
+```
 
 # Introduction
 
@@ -132,10 +171,6 @@ We will use data from the MPOG database only, without any linkage to additional 
 The primary outcome is PONV, as defined by the PONV-03 outcome metric. This is a dichotomous measure, with possible values of **passed** (indicating no PONV) or **failed** (indicating PONV). Specifically, a value of **failed** is be assigned for all patients who either have documented nausea or emesis *or* receive a rescue antiemetic in the immediate postoperative period, defined as the period from PACU start through 6 hours after anesthesia end time.[@RN1194]
 
 \noindent Full details for the PONV-03 metric can be found at: <https://spec.mpog.org/Spec/Public/33>
-
-```{r}
-
-```
 
 ## Secondary Outcomes(s)
 
@@ -257,18 +292,200 @@ Variables outlined in the table below will be sourced from the PONV-03 and PONV-
 
 ### Propensity Score Model
 
-A causal directed acyclic graph (DAG) outlining the proposed relationships between the exposure, outcome, and covariates of interest is shown in @fig-dag. 
+Variable selection for inclusion in the propensity score model (and outcome model) will be guided by construction of a causal directed acyclic graph (DAG) outlining the proposed relationships between the exposure, outcome, and covariates of interest (@fig-dag). Prior to propensity score weighting, covariates of interest will be compared across cohorts (compliant vs. non-compliant prophylaxis) using standardize mean differences. 
 
-### Outcome Models
-
-
-
-```{r fig-dag, echo=FALSE, dpi=600, fig.height=9, fig.width=18, fig.align='center', cache=TRUE, fig.cap="DAG Showing Proposed Relationships Amongst the Exposure, Outcome and Covariates of Interest"}
+```{r fig-dag, echo=FALSE, dpi=600, fig.height=9, fig.width=18, fig.align='center', cache=TRUE, fig.cap="DAG Showing proposed relationships amongst the exposure, outcome and covariates of tnterest"}
 
 source("~/Desktop/projects/mpog_multi_ponv/scripts/pcrc_figures.R")
 
 pcrc_dag
 ```
+
+### Outcome Model
+
+The primary outcome model will be a multilevel, propensity score weighted, Bayesian Bernoulli model with random intercepts and slopes for the coefficient of interest ($\beta_{compliant}$) at the hospital and clinician level. The full model can be represented as:
+
+$$
+\begin{aligned}
+\textbf{Outcome: }{}        &\text{PONV}_{ich} \sim \textit{Bernoulli }(p_{ich})\\
+\textbf{Patient Level: }{}  &\text{logit}^{-1}(p_{ich}) = \beta_{0ch} + \beta_{1ch}w_{ich} + \beta_{2}X_{i} + \cdots + \beta_{j}X_{i}\\
+\textbf{Clinician Level: }{}&\beta_{0ch} = \delta_{00h} + U_{0ch}\\
+                            &\beta_{1ch} = \delta_{10h} + U_{1ch}\\
+\textbf{Hospital Level: }{} &\delta_{00h} = \gamma_{000} + V_{00h}\\
+                            &\delta_{10h} = \gamma_{100} + V_{10h}\\
+\end{aligned}
+$$
+
+where, $\beta_{0ch}$ represents the clinician and hospital specific intercept, $\beta_{1ch}$ represents the clinician and hospital specific treatment effect, and $\beta_{2} \ldots \beta_{j}$ represent additional fixed effects coefficients. $U_{0ch}$ and $V_{00h}$ represent clinician-, and hospital-level random intercepts, respectively, while $U_{1ch}$ and $V_{10h}$ represent clinician- and hospital-level random slopes for the treatment effect. Finally, $\gamma_{000}$ is the fixed intercept and $\gamma_{100}$ is the fixed effect estimate for the treatment. The distribution and correlation structure between random intercepts and slopes at both the hospital and clinician level are described as:
+
+$$
+\begin{aligned}
+\begin{pmatrix}U_{0c}\\
+U_{1c}
+\end{pmatrix} &\sim  N
+\begin{bmatrix}
+\begin{pmatrix}
+0\\
+0
+\end{pmatrix},&
+\Sigma_{c}
+\end{bmatrix}\\
+\\
+\begin{pmatrix}V_{0h}\\
+V_{1h}
+\end{pmatrix} &\sim  N
+\begin{bmatrix}
+\begin{pmatrix}
+0\\
+0
+\end{pmatrix},&
+\Sigma_{h}
+\end{bmatrix}\\
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\Sigma_c =
+\begin{pmatrix}
+\tau_{00} & 0\\
+0 & \tau_{10}
+\end{pmatrix} R_c
+\begin{pmatrix}
+\tau_{00} & 0\\
+0 & \tau_{10}
+\end{pmatrix}\\
+\\
+\Sigma_h =
+\begin{pmatrix}
+\phi_{00} & 0\\
+0 & \phi_{10}
+\end{pmatrix} R_h
+\begin{pmatrix}
+\phi_{00} & 0\\
+0 & \phi_{10}
+\end{pmatrix}\\
+\end{aligned}
+$$
+
+Finally, priors for all parameters are outlined to complete the model:
+
+$$
+\begin{aligned}
+\beta_{j}{}    &\sim \textit{Normal }(0, 1)\\
+\gamma_{000}{} &\sim \textit{Normal }(-2, 1)\\
+\gamma_{100}{} &\sim \textit{Normal }(0, 1)\\
+\tau_{00}{}    &\sim \textit{Half-Cauchy }(0, 1)\\
+\tau_{01}{}    &\sim \textit{Half-Cauchy }(0, 1)\\
+\phi_{00}{}    &\sim \textit{Half-Cauchy }(0, 1)\\
+\phi_{01}{}    &\sim \textit{Half-Cauchy }(0, 1)\\
+R_c{}          &\sim \textit{LKJ }(2)\\
+R_h{}          &\sim \textit{LKJ }(2)\\
+\end{aligned}
+$$
+
+### Prior Distributions
+
+The full set of prior distributions is delineated in the prior section. Selection of prior distributions is based primarily on baseline knowledge of the incidence of PONV in the pediatric population (particularly from prior single center work) and the use of prior predictive simulation. For the fixed intercept we will use $\textit{Normal}(-1.5, 0.75)$, which implies the distribution of PONV probabilities shown in @fig-intercept for the average patient receiving non-compliant prophylaxis, with covariates at the mean or in the reference class.
+
+```{r fig-intercept, echo=FALSE, dpi=600, fig.height=3, fig.width=3, fig.align='center', cache=TRUE, fig.cap="Prior distribution for the intercept on the probability scale."}
+
+tibble(x = inv_logit_scaled(rnorm(100000, mean = -1.5, sd = 0.75))) %>%
+  ggplot() + 
+  stat_halfeye(aes(x = x),
+               fill = "darkred") + 
+  coord_cartesian(xlim = c(0, 1)) + 
+  labs(x = "Pr(PONV)",
+       y = "Density")
+
+```
+
+For the coefficient of interest ($\beta_{compliant}$) our primary prior will be relatively conservative and centered on no effect: $\textit{Normal(0, 1)}$. Simulated distributions using this prior are shown below for (A) $\beta_{compliant}$ on the log odds scale, (B) $\text{OR}_{compliant}$, and (C) the conditional absolute risk reduction ($\text{ARR}_{compliant}$) for patients with all covariates at the reference class.
+
+```{r fig-prior, echo=FALSE, dpi=600, fig.height=3, fig.width=8, fig.align='center', cache=TRUE, fig.cap="Prior distributions for the effect of interest on various scales."}
+
+df <- 
+  tibble(intercept = rnorm(100000, mean = -1.5, sd = 0.75),
+         beta = rnorm(100000, mean = 0, sd = 1),
+         or = exp(beta),
+         log_treat = intercept + beta,
+         prob_treat = inv_logit_scaled(log_treat),
+         log_control = intercept,
+         prob_control = inv_logit_scaled(log_control),
+         arr = prob_control - prob_treat)
+
+beta_prior_plot <-
+  df %>%
+  ggplot() + 
+  stat_halfeye(aes(x = beta),
+               fill = degas[5]) +
+  labs(x = expression(bold(beta["compliant"])),
+       y = "Density") + 
+  coord_cartesian(xlim = c(-4, 4)) +
+  theme(axis.title.x = element_text(family = "times", face = "bold"))
+
+
+or_prior_plot <-
+  df %>%
+  ggplot() + 
+  stat_halfeye(aes(x = or),
+               fill = degas[2]) +
+  labs(x = expression(bold(OR["compliant"])),
+       y = "Density") + 
+  coord_cartesian(xlim = c(0, 10))
+
+arr_prior_plot <- 
+  df %>%
+  ggplot() +
+  stat_halfeye(aes(x = arr),
+               fill = degas[4]) + 
+  labs(x = expression(bold(ARR["compliant"])),
+       y = "Density") + 
+  coord_cartesian(xlim = c(-0.7, 0.5))
+  
+plot_grid(beta_prior_plot, or_prior_plot, arr_prior_plot,
+          ncol = 3, labels = c("A", "B", "C"))
+  
+```
+
+In addition to this main set of $\beta$ priors, we will conduct sensitivity analyses using two alternative sets of priors: (1) *brms* default priors (improper flat priors over the reals)[@RN1137] and a weakly informative Student's $t$ distribution ($\text{df}$ = 3, $\mu$ = 0, $\sigma$ = 1). 
+
+Prior distributions for both the standard deviations ($\textit{Half-Cauchy }(0, 1)$) and the correlation matrices ($\textit{LKJ }(2)$) of random effects will be relatively broad. These distributions are outlined in the plots below.
+
+```{r fig-random-prior, echo=FALSE, dpi=600, fig.height=3, fig.width=5, fig.align='center', cache=TRUE, fig.cap="Prior distributions for random effects parameters."}
+
+df <- 
+  tibble(rho = ggdist::rlkjcorr_marginal(1000000, 2, 2),
+         sd  = rcauchy(1000000, 0, 1))
+
+rho_prior_plot <-
+  df %>%
+  ggplot() + 
+  stat_halfeye(aes(x = rho),
+               fill = isfahan[6]) +
+  labs(x = expression(bold(rho)),
+       y = "Density") + 
+  coord_cartesian(xlim = c(-1, 1)) +
+  theme(axis.title.x = element_text(family = "times", face = "bold"))
+
+sd_prior_plot <-
+  df %>%
+  ggplot() + 
+  stat_halfeye(aes(x = sd),
+               fill = isfahan[1]) +
+  labs(x = expression(paste(phi, " & ", tau)),
+       y = "Density") + 
+  xlim(0, 10) + 
+  theme(axis.title.x = element_text(family = "times", face = "bold"))
+
+plot_grid(sd_prior_plot, rho_prior_plot,
+          ncol = 2, labels = c("A", "B"))
+  
+```
+
+### Additional Details
+
+For the purposes of modeling, all continuous numeric variables will be centered and scaled to a mean of 0 and standard deviation of 1. Models will be fit using the Markov chain Monte Carlo (MCMC) method, specifically the No-U-Turn Sampler (NUTS) implementation of a dynamic Hamiltonian Monte Carlo algorithm via the *brms* package.[@RN1137] As described in more detail below, models will be estimated 20 times - once for each multiply imputed dataset, with posterior distributions subsequently pooled for further analysis. Each model will be estimated with four chains in parallel for 8,000 iterations, with the first 3,000 iterations per chain discarded after the warmup stage for a total of 20,000 post-warmup draws. Model convergence will be evaluated using Gelman-Rubin $\hat{R}$ values, MCMC trace plots, effective sample size ratios and Monte-Carlo standard errors.
 
 All analyses, data visualization, and reporting will be performed using R (version 4.3.0; available at <https://www.r-project.org/>) using the *brms*[@RN1137], *tidybayes*[@RN1224], *bayesplot*[@RN1225], *bayestestR*[@RN1227], *mice*[@RN59], *tidyr*[@RN1226], *dplyr*[@RN1226], and *ggplot2*[@RN1226] packages. 
 
@@ -311,7 +528,7 @@ $$
 \alpha_{ich} = \gamma_0 + \gamma_{1c} + \gamma_{2h}
 $$
 $$
-\gamma_0 \sim \textit{Normal}(-2.5, 0.75)
+\gamma_0 \sim \textit{Normal}(-2, 1)
 $$
 $$
 \gamma_{1c} \sim \textit{Normal}(0, \sigma_c^2) 
@@ -328,7 +545,7 @@ $$
 
 ## Handling of Missing Data
 
-Missing covariate data will be imputed using multiple imputation with chained equations via predictive mean matching (numeric continuous variables), logistic regression (dichotomous categorical variables), or polytomous regression (multigroup categorical variables). The imputation model will be fit 20 times, generating 20 imputed datasets. Both propensity score and outcome models will be estimated once for each imputation dataset, and the posterior distributions will be pooled, similar to the approach used by *Kuck et al.*[@RN1228] Missing outcome data will not be imputed - patients with missing PONV-03 values will be excluded.
+While full Bayesian imputation (e.g., imputation of missing values *during* model fitting) is an attractive approach to missing data in this setting, *Stan* (the software behind the *brms* package) does not currently support imputation of discrete parameters. Given that we anticipate missing data to not be confined only to our continuous covariates of interest, we will use an alternative approach to imputation. Missing covariate data will be imputed using multiple imputation with chained equations via predictive mean matching (numeric continuous variables), logistic regression (dichotomous categorical variables), or polytomous regression (multigroup categorical variables) within the *mice* package.[@RN59] The imputation model will be fit 20 times, generating 20 imputed datasets. Both propensity score and outcome models will be estimated once for each imputation dataset, and the posterior distributions will be pooled, similar to the approach used by *Kuck et al.*[@RN1228] Missing outcome data will not be imputed; patients with missing PONV-03 values will be excluded.
 
 ## Major Threats to Inference & Mitigation Strategies
 
@@ -336,7 +553,7 @@ In this retrospective analysis of PONV prophylaxis, the major threat to inferenc
 
 # Preliminary Data Analyses
 
-We recently conducted a single-center retrospective study evaluating the association between compliant (termed "adequate" in this manuscript) prophylaxis (as defined by PONV-04) and PONV (as defined by PONV-03) in pediatric patients undergoing general anesthesia at Duke University Hospital. This study analyzed 14,747 patients across four years (2018-2021) and used propensity-score weighted Bayesian binomial models to estimate the association of interest. The overall rate of adequate prophylaxis was 39% and the overall incidence of PONV was 10.6%. Receipt of adequate prophylaxis varied considerably across risk groups and several variables were poorly balanced across prophylaxis groups. In our primary (weighted and multivariable adjusted) outcome model there was modest evidence for a relative benefit of adequate prophylaxis, with a median odds ratio of 0.82 (95% credible interval 0.66, 1.02; @fig-odds-plot) and median marginal absolute risk reduction of 1.3% (95% credible interval -0.1%, 3.1%). Patient-specific, covariate-adjusted ARR was heterogeneous across the study population (@fig-arr-plot).
+We recently conducted a single-center retrospective study evaluating the association between compliant (termed "adequate" in this manuscript) prophylaxis (as defined by PONV-04) and PONV (as defined by PONV-03) in pediatric patients undergoing general anesthesia at Duke University Hospital. This study analyzed 14,747 patients across four years (2018-2021) and used propensity-score weighted Bayesian binomial models to estimate the association of interest. The overall rate of adequate prophylaxis was 39% and the overall incidence of PONV was 10.6%. Receipt of adequate prophylaxis varied considerably across risk groups and several variables were poorly balanced across prophylaxis groups. In our primary (weighted and multivariable adjusted) outcome model there was modest evidence for a relative benefit of adequate prophylaxis, with a median odds ratio of 0.82 (95% credible interval 0.66, 1.02; @fig-odds-plot) and median marginal absolute risk reduction of 1.3% (95% credible interval -0.1%, 3.1%). Patient-specific, covariate-adjusted ARR was heterogeneous across the study population (@fig-arr-plot). Here, each estimate of ARR is conditioned on the individual patient’s characteristics and thus is reflective of a patient-specific estimate of benefit. This plot highlights the magnitude and variability of absolute benefit across the range of patients represented in the study population
 
 ```{r fig-odds-plot, echo=FALSE, dpi=600, fig.height=5, fig.width=5, fig.align='center', cache=TRUE, fig.cap="Posterior distributions for the weighted and unweighted estimates for the odds ratio (OR) for the association between adequate prophylaxis and PONV from both unadjusted and adjusted models. Dashed vertical line represents an OR of 1, with the portion of each distribution falling above this point represented with a reduction in opacity. Black points represent the median of the posterior distribution. Inner and outer slab intervals represent 66% and 95% credible intervals for the posterior median, respectively."}
 
@@ -352,7 +569,7 @@ source("~/Desktop/projects/mpog_multi_ponv/scripts/pcrc_figures.R")
 arr_plot
 ```
 
-In an interaction model examining the association of adequate prophylaxis across the MPOG-defined risk spectrum, there was evidence for a differential association, with some benefit in lower risk patients but attenuation of this effect in high-risk groups (@fig-interaction-plot). 
+In an interaction model examining the association of adequate prophylaxis across the MPOG-defined risk spectrum, there was evidence for a differential association, with some benefit in lower risk patients but attenuation of this effect in high-risk groups (@fig-interaction-plot). In *unweighted* estimates there was modest evidence for an interaction between sum of risk factors and the association of adequate prophylaxis with PONV as shown by a reduced incidence in patients with 1-2 risk factors (conditional probability of benefit 0.96 and 0.95 respectively) but increased risk in patients with 3+ risk factors receiving adequate prophylaxis (conditional probability of benefit 0, 0.01, and 0.03 for 3, 4 and 5 risk factors, respectively). This phenomenon was attenuated by weighting, but evidence for differential effects remained, with persistent benefit in 1-2 risk factors (conditional probability of benefit 0.90 and 0.94, respectively) but near equalization of risk in 3+ risk factors (conditional probability of benefit 0.51, 0.57, and 0.57, for 3, 4 and 5 risk factors, respectively). This phenomenon, and particularly its attenuation with weighting, is possibly consistent with several points: (1) dichotomous risk factor summation as a means to estimate preoperative risk for PONV ignores the possibility of differential effects of individual risk score components, (2) substantial important prognostic information exists beyond these commonly-cited individual risk factors, and (3) discrepancy between clinician-estimated preoperative risk and a posteriori determined risk in relation to volatile anesthetic duration. PONV risk at a given sum of risk factors is not homogeneous, but rather is determined by the unique composition of identified risk factors and other important prognostic attributes. It is possible that these differences are identified or inferred by clinicians, prompting use of more antiemetics in patients who, despite having a given risk score, are in fact at higher risk than anticipated.
 
 ```{r fig-interaction-plot, echo=FALSE, dpi=600, fig.height=15, fig.width=15, fig.align='center', cache=TRUE, fig.cap="Probability of PONV (A), and absolute risk reduction of adequate prophylaxis (B) stratified by appropriateness of prophylaxis and sum of MPOG PONV risk factors. Unweighted (left plot) and weighted (right plot) estimates are shown, and are generated using 16,000 draws from each model’s respective posterior distribution. Points represent the median of the posterior distribution and inner & outer intervals represent 66% and 95% credible intervals for the posterior median, respectively. Note the differential association between appropriate prophylaxis and PONV risk across the spectrum of risk scores in the unweighted estimates, with subsequent attenuation of this phenomenon following propensity score weighting. Black dashed line in (B) marks ARR = 0. See text for definition and values of the conditional probabilities of benefit at each level of risk summation. PONV - postoperative nausea and vomiting."}
 
@@ -360,8 +577,6 @@ source("~/Desktop/projects/mpog_multi_ponv/scripts/pcrc_figures.R")
 
 interaction_grid
 ```
-
-
 
 # Areas for Discussion & Known Limitations
 
