@@ -1,6 +1,6 @@
 ---
 title: "The Association of Guideline Directed Prophylaxis with the Incidence of Postoperative Nausea and Vomiting in Pediatric Patients"
-subtitle: "A Multicenter Retrospective Observational Cohort Study"
+subtitle: "Proposal for A Multicenter Retrospective Observational Cohort Study"
 short-title: "Pediatric PONV Prophylaxis"
 author:
   - name: "Benjamin Y. Andrew, MD, MHS"
@@ -24,32 +24,53 @@ author:
     affiliation: "Duke University School of Medicine, Department of Anesthesiology"
 abstract: |-
   Postoperative nausea and vomiting (PONV) is a frequent complication following general anesthesia in pediatric patients. Further, PONV is associated with a number of negative patient outcomes including dehydration, pulmonary aspiration, delayed mobilization, risk for wound dehiscence, delayed discharge, and unanticipated hospital admission. Given its high incidence and associated costly outcomes, a systematic approach to reducing PONV through appropriate prophylaxis represents a key opportunity for optimization of patient care. Consensus guidelines for prophylaxis against PONV in pediatric patients recommend a risk-based approach, with escalation in the number of antiemetics based on a preoperative estimate of PONV risk. These recommendations have been translated into performance metrics, most notably by the Multicenter Perioperative Outcomes Group (MPOG) through the Anesthesiology Performance Improvement and Reporting Exchange (ASPIRE), which currently includes over 25 children’s hospitals Despite widespread dissemination of the guideline-defined quality metric for PONV prophylaxis, the association between adherence to such a risk-based approach and clinical outcomes remains unknown. Further, while the consensus guidelines are based on a comprehensive collation of evidence surrounding PONV risk prediction and prophylaxis, this evidence base is not robust. Most notably, risk prediction in pediatric PONV is sparsely studied, and available risk models utilize suboptimal methods that leave them prone to misclassification and bias. Thus, it is important to objectively estimate how published national guidelines, based on the current landscape of pediatric PONV risk prediction, are associated with clinical outcomes.
-code-repo: "Replication materials for this manuscript are available at <https://github.com/ajnafa/Latent-Bayesian-MSM/tree/apsa-paper>"
+code-repo: "Replication materials for this proposal and project are available at <https://github.com/andrew10043/mpog_peds_ponv>"
 thanks: |-
-  This manuscript was prepared for the American Political Science Association's Annual Meeting in Montreal, Quebec, September 15--18, 2022.
-date: September 9, 2022
+  This is a preliminary proposal prepared for review by the Perioperative Clinical Research Committee (PCRC).
+date: April 21, 2022
 keywords: 
-  - Bayesian statistics
-  - causal inference
-  - panel data
+  - postoperative nausea and vomiting
+  - pediatric anesthesioloy
+  - MPOG
+bibliography: "../../assets/references.bib"
 format: 
   hikmah-pdf:
-    fontsize: 12pt
-    monofontoptions: 
+    fig-pos: 'h'
+    fontsize: 11pt
+
+    # Custom fonts
+    mainfont: "Linux Libertine O"
+    mainfontoptions:
+       - "Numbers=Proportional"
+    #   - "Numbers=OldStyle"
+    sansfont: "Jost" 
+    # monofont: "InconsolataGo"
+    monofontoptions:
       - "Mapping=tex-ansi"
       - "Scale=MatchLowercase"
+    mathfont: "Libertinus Math"
+
     # Colors
     include-in-header: 
       text: |
-        \definecolor{untgreen}{HTML}{00853E}
-    linkcolor: untgreen
-    urlcolor: untgreen
-    citecolor: untgreen
+        \definecolor{dukeblue}{HTML}{00539B}
+    linkcolor: dukeblue
+    urlcolor: dukeblue
+    citecolor: dukeblue
+    
+    # Use biblatex-chicago
+    biblatex-chicago: false
+    biblio-style: nature
+    biblatexoptions: 
+      - backend=biber
+      - autolang=hyphen
+      - isbn=false
+      - uniquename=false
     knitr:
       opts_chunk:
         fig.retina: 1
   html: default
-fig-cap-location: top
+fig-cap-location: bottom
 
 knitr:
   opts_chunk:
@@ -60,6 +81,289 @@ knitr:
     fig.path: "figures/"
     cache.path: "_cache/"
 ---
+
+# Introduction
+
+Postoperative nausea and vomiting (PONV) is a frequent complication following general anesthesia in pediatric patients, with a reported incidence often exceeding that in the adult population.[@RN1186; @RN1187] Further, PONV is associated with a number of negative patient outcomes including dehydration, pulmonary aspiration, delayed mobilization, risk for wound dehiscence, delayed discharge and unanticipated hospital admission.[@RN1187; @RN1192]
+
+Given its high incidence and associated costly outcomes, a systematic approach to reducing PONV through appropriate prophylaxis represents a key opportunity for optimization of patient care. Consensus guidelines for prophylaxis against PONV in pediatric patients recommend a risk-based approach, with escalation in the number of antiemetics based on a preoperative estimate of PONV risk.[@RN1193] These recommendations have been translated into performance metrics, most notably by the Multicenter Perioperative Outcomes Group (MPOG) through the Anesthesiology Performance Improvement and Reporting Exchange (ASPIRE), which currently includes over 25 children's hospitals.[@RN1194]
+
+However, despite widespread dissemination of this metric, the impact of this approach on clinical outcomes is not known. Further, while the consensus guidelines are based on a comprehensive collation of evidence surrounding PONV risk prediction and prophylaxis, this evidence base is not robust. Most notably, risk prediction in pediatric PONV is sparsely studied, and available risk models utilize suboptimal methods that leave them prone to misclassification and bias. Thus, it is important to objectively estimate how published national guidelines, based on the current landscape of pediatric PONV risk prediction, are associated with clinical outcomes. In a preliminary single center analysis (discussed further in subsequent sections), there was evidence for a modest relative and absolute benefit of adherence to guideline directed prophylaxis although this was a heterogeneous effect that appeared to differ across the risk spectrum.[@RN1222] The study proposed herein will aim to more rigorously investigate the association between adherence to guideline recommended risk-based PONV prophylaxis and the incidence of PONV in pediatric patients.
+
+More specifically, our primary research question is:
+
+> *Does adherence to PONV prophylaxis guidelines (as defined by MPOG-ASPIRE process measure PONV-04) reduce the incidence of PONV (as defined by MPOG-ASPIRE outcome measure PONV-03) in pediatric patients undergoing general anesthesia?*
+
+It follows, then, that the primary aim of the proposed analysis is to estimate the causal effect of adherence to PONV prophylaxis guidelines on the incidence of PONV in the post-anesthesia recovery unit.
+
+# Methods
+
+## Study Design
+
+## Study Population
+
+We will include all patients age 3-17 undergoing general anesthesia at participating institutions from January 1st, 2015 through December 31st, 2023. Complete inclusion and exclusion criteria are outlined below:
+
+-   Inclusion criteria
+    -   General anesthetic encounter $\geq$ 15 minutes
+    -   Age at time of procedure $\geq$ 3 years
+-   Exclusion criteria
+    -   Cardiothoracic surgery
+    -   Cardiac catheterization
+    -   Liver transplantation
+    -   Lung transplantation
+    -   American Society of Anesthesiologists (ASA) physical status classification $\geq$ 5
+    -   Postoperative ICU admission
+    -   Electroconvulsive therapy
+    -   Labor epidural encounters
+    -   Cesarean deliveries
+    -   Radiation oncology procedures
+    -   Radiology procedures
+    -   Non-operative cases
+    -   All additional cases marked as *excluded* from either PONV-04 or PONV-03 metrics
+    -   All cases with missing PONV-03 outcome data
+
+## Data Source
+
+We will use data from the MPOG database only, without any linkage to additional data sources.
+
+## Primary Outcome
+
+The primary outcome is PONV, as defined by the PONV-03 outcome metric. This is a dichotomous measure, with possible values of **passed** (indicating no PONV) or **failed** (indicating PONV). Specifically, a value of **failed** is be assigned for all patients who either have documented nausea or emesis *or* receive a rescue antiemetic in the immediate postoperative period, defined as the period from PACU start through 6 hours after anesthesia end time.[@RN1194]
+
+\noindent Full details for the PONV-03 metric can be found at: <https://spec.mpog.org/Spec/Public/33>
+
+```{r}
+
 ```
-Testing. 
+
+## Secondary Outcomes(s)
+
+Based on our initial exploratory data analysis in the multicenter cohort, we may examine one secondary outcome, aimed primarily at understanding the surrogate nature of our primary outcome. Given that the administration of resuce antiemetics in the PACU may occur for reasons other than evidence of active PONV (e.g., continued *prophylaxis* for a patient assumed to be at high risk, pre-discharge *top-up* for outpatient surgical cases, etc.), we plan to examine the primary outcome restricted to cases only with **documented** PONV. However, as institutional documentation practices also may vary substantially, this secondary outcome metric will only be considered following a review of its use and incidence patterns in the multicenter cohort. In tandem with this secondary outcome, we will also examine the distribution of antiemetic administration timing, as this may further inform the patterns antiemetic rescue vs. continued PACU *prophylaxis* in certain cases.
+
+## Exposure Variable
+
+The exposure variable of interest is compliance with PONV prophylaxis guidelines as defined by the PONV-04 measure. A patient will be considered to have received **compliant prophylaxis** if he or she receives *at least* the recommended number of prophylactic antiemetic agents, with **noncompliant prophylaxis** representing any number of agents less than the recommended value. Compliance will be based on the PONV-04 metric which recommends $\geq$ 1 agent for patients with 1 risk factor, $\geq$ 2 agents for patients with 2 risk factors, and $\geq$ 3 agents for patients with $\geq$ 3 risk factors.[@RN1194]
+
+\noindent Risk factors are defined as follows:
+
+-   Age $\geq$ 3 years
+-   Female patient $\geq$ 12 years
+-   History of PONV in the patient, parent or sibling
+-   High risk surgery (strabismusm adenotonsillectomy, tympanoplasty)
+-   Inhaled anesthetic duration $\geq$ 30 minutes
+-   Administration of long acting opioids
+
+\noindent To be considered as a valid antiemetic agent towards metric compliance, each agent must come from a different pharmacologic class:
+
+-   5-HT3 receptor antagonists
+-   Anticholinergic agents
+-   Antihistamines
+-   Butyrophenones
+-   NK-1 receptor agonists
+-   Phenothiazines
+-   Steroids
+-   Prokinetic agents
+-   Propofol (infusion only)
+
+\noindent Full details for the PONV-04 metric can be found at: <https://spec.mpog.org/Spec/Public/48>
+
+## Covariates
+
+Covariates are outlined in the tables below. Each name is linked to its respective MPOG phenotype document, if applicable, for further details.
+
+### Patient Level Variables
+
+Each patient is identified using a unique MPOG ID. Age will be modeled as a continuous variable, in years. Unless necessary due to small sample size, we will retain all original race categories as reported in the database.
+
+| Variable                                                                      | Type       | Definition / Description                              |
+|-------------------|-------------------|----------------------------------|
+| [MPOG Patient ID](https://phenotypes.mpog.org/MPOG%20Patient%20ID)            | Nominal    | Unique patient identifier.                            |
+| [Age](https://phenotypes.mpog.org/Age%20(Years))                              | Continuous | Patient age in years                                  |
+| [Race](https://phenotypes.mpog.org/Race)                                      | Nominal    | Race or Ethnicity of the patient                      |
+| [Sex](https://phenotypes.mpog.org/Sex)                                        | Nominal    | Documented sex of the patient at the time of the case |
+| [ASA Physical Status Classification](https://phenotypes.mpog.org/ASA%20Class) | Ordinal    | ASA classifcation assigned to a case                  |
+
+: Basic Patient Level Variables
+
+### Center Level Variables
+
+Each institution will be represented by a unique ID. Medical school and pediatric hospital affiliation status, along with bed size, will be used as the primary center level variables for modeling purposes.
+
+| Variable                                                                                         | Type    | Definition / Description                                                                                 |
+|-------------------|-------------------|----------------------------------|
+| [Institution](https://phenotypes.mpog.org/Institution)                                           | Nominal | Unique institution identifier.                                                                           |
+| [Medical School Affiliation](https://phenotypes.mpog.org/Medical%20School%20Affiliation)         | Nominal | Indicates whether the case occured at an institution affiliated with a medical school.                   |
+| [Pediatric Hospital Affiliation](https://phenotypes.mpog.org/Pediatric%20Hospital%20Affiliation) | Nominal | Indicates whether the case occurred at a Children's Hospital affiliated with an active MPOG institution. |
+| [Hospital Bed Size](https://phenotypes.mpog.org/Hospital%20Bed%20Size)                           | Ordinal | Categorical value indicating the the bed-size for each hospital.                                         |
+
+: Center Level Variables
+
+### Procedure Level Variables
+
+Surgical procedures will be classified by surgical service (e.g., general surgery, neurosurgery) tags, with procedure text used to clarify any discrepancies and further exclude specific procedure types. The *Anesthesia Technique* variables and *Airway Type* will be used to categorize cases based on airway management and anesthetic approach (e.g., GETA with epidural, LMA with block, etc.).
+
+| Variable                                                                                                                         | Type       | Definition / Description                                                                                                                |
+|-------------------|-------------------|----------------------------------|
+| Year of Procedure                                                                                                                | Ordinal    | Based on [surgery start date/time](https://phenotypes.mpog.org/Surgery%20Start%20Date!Time).                                            |
+| [Case Duration](https://phenotypes.mpog.org/Case%20Duration)                                                                     | Continuous | Duration of time a patient is anesthetized (in minutes).                                                                                |
+| [Procedure](https://phenotypes.mpog.org/Procedure%20Text)                                                                        | Nominal    | Textual description of the procedure.                                                                                                   |
+| [Procedure Type: Adenotonsillectomy](https://phenotypes.mpog.org/Procedure%20Type:%20Adenotonsillectomy)                         | Nominal    | Determines whether the case includes Tonsilectomy, Adenoidectomy, Adenotonsillectomy or control of postop tonsil bleed.                 |
+| [Procedure Type: Strabismus](https://phenotypes.mpog.org/Procedure%20Type:%20Strabismus)                                         | Nominal    | Determines whether a case was a Strabismus procedure.                                                                                   |
+| [Procedure Type: Tympanoplasty](https://phenotypes.mpog.org/Procedure%20Type:%20Tympanoplasty)                                   | Nominal    | Determines if a case includes tympanoplasty.                                                                                            |
+| [Surgical Service](https://phenotypes.mpog.org/Surgical%20Service)                                                               | Nominal    | Surgical service assigned to the case.                                                                                                  |
+| [Postoperative Destination](https://phenotypes.mpog.org/Postoperative%20Destination)                                             | Nominal    | Returns the postoperative destination classification assigned to the case (e.g., transported to ICU, PACU, etc.)                        |
+| [Airway Type](https://phenotypes.mpog.org/Airway%20Type)                                                                         | Nominal    | Returns the airway type assigned to a case based on collation mapping of EMR data (e.g., ETT, LMA, mask, MAC-sedation, etc.)            |
+| [Anesthesia Technique: General](https://phenotypes.mpog.org/Anesthesia%20Technique:%20General)                                   | Nominal    | This phenotype attempts to classify each case in terms of general anesthesia technique (e.g., "no", "General-ETT", "General-LMA", etc.) |
+| [Anesthesia Technique: Neuraxial](https://phenotypes.mpog.org/Anesthesia%20Technique:%20Neuraxial)                               | Nominal    | Identifies the use of neuraxial anesthesia and the type, if used.                                                                       |
+| [Anesthesia Technique: Peripheral Nerve Block](https://phenotypes.mpog.org/Anesthesia%20Technique:%20Peripheral%20Nerve%20Block) | Nominal    | Identifies the use of a peripheral nerve block and the type, if used.                                                                   |
+| [Anesthesia Technique: Sedation](https://phenotypes.mpog.org/Anesthesia%20Technique:%20Sedation)                                 | Nominal    | Indicator variable for MAC cases with sedation.                                                                                         |
+| [Halogenated Anesthetic Gas Use](https://phenotypes.mpog.org/Halogenated%20Anesthetic%20Gases)                                   | Nominal    | Specifies if (and when) halogenated anesthetic gases were administered during a case.                                                   |
+| [Nitrous Oxide Use](https://phenotypes.mpog.org/Nitrous%20Oxide%20Used)                                                          | Nominal    | Specifies if (and when) nitrous oxide was administered during a case.                                                                   |
+
+: Procedure Level Variables
+
+### Clinician Level Variables
+
+The *primary provider* phenotype will be used to provide a unique attending ID for multilevel modeling purposes. It will also be used to classify the in-room clinician for cases as either *resident* or *non-resident* (CRNA or AA).
+
+| Variable                                                           | Type    | Definition / Description                                                                                                 |
+|-------------------|-------------------|----------------------------------|
+| [Primary Provider](https://phenotypes.mpog.org/Primary%20Provider) | Nominal | Determines the anesthesia attending and non-attending anesthesia providers signed in for the longest duration of a case. |
+
+: Clinician Level Variables
+
+### PONV Related Variables
+
+Variables outlined in the table below will be sourced from the PONV-03 and PONV-04 data files and many do not have specific MPOG phenotypes.
+
+| Variable                                                                  | Type      | Definition / Description                                                                                         |
+|-------------------|-------------------|----------------------------------|
+| [PONV-03 Result](https://phenotypes.mpog.org/Measure:%20PONV-03)          | Nominal   | Primary outcome, as described in previous sections.                                                              |
+| [PONV-04 Result](https://phenotypes.mpog.org/Measure:%20PONV-04%20(PEDS)) | Nominal   | Primary exposure, as described in previous sections.                                                             |
+| PONV-03 Result Reason                                                     | Nominal   | Explanatory variable for PONV-03 result (e.g., reasons for exclusion or failure)                                 |
+| PONV-04 Result Reason                                                     | Nominal   | Explanatory variable for PONV-04 result (e.g., reasons for exclusion or failure)                                 |
+| Prophylactic Agents                                                       | Character | Character vector of all prophylactic antiemetic agents administered.                                             |
+| Risk Factor: Age $\geq$ 3                                                 | Nominal   | Indicator variable for patients with age $\geq$ 3 years.                                                         |
+| Risk Factor: Female $\geq$ 12                                             | Nominal   | Indicator variable for female patients $\geq$ 12 years old.                                                      |
+| Risk Factor: History                                                      | Nominal   | Indicator variable for patients with personal or family history of PONV.                                         |
+| Risk Factor: Volatile Duration                                            | Nominal   | Indicator variable for patients with volatile anesthetic exposure $\geq$ 30 minutes.                             |
+| Risk Factor: Opioid                    3                                   | Nominal   | Indicator variable for patients who are administered long-acting opioids.                                        |
+| Risk Factor: Procedure                                                    | Nominal   | Indicator variable for patients undergoing a high risk procedure (adenotonsillectomy, tympanoplasty, strabismus) |
+
+: PONV Related Variables
+
+## Statistical Analysis
+
+### Propensity Score Model
+
+A causal directed acyclic graph (DAG) outlining the proposed relationships between the exposure, outcome, and covariates of interest is shown in @fig-dag. 
+
+### Outcome Models
+
+
+
+```{r fig-dag, echo=FALSE, dpi=600, fig.height=9, fig.width=18, fig.align='center', cache=TRUE, fig.cap="DAG Showing Proposed Relationships Amongst the Exposure, Outcome and Covariates of Interest"}
+
+source("~/Desktop/projects/mpog_multi_ponv/scripts/pcrc_figures.R")
+
+pcrc_dag
 ```
+
+All analyses, data visualization, and reporting will be performed using R (version 4.3.0; available at <https://www.r-project.org/>) using the *brms*[@RN1137], *tidybayes*[@RN1224], *bayesplot*[@RN1225], *bayestestR*[@RN1227], *mice*[@RN59], *tidyr*[@RN1226], *dplyr*[@RN1226], and *ggplot2*[@RN1226] packages. 
+
+We will compose our eventual manuscript to adhere to reporting guidelines as outlined by the Strengthening the Reporting of Observational Studies in Epidemiology (STROBE) statement[@RN1201] as well as guidelines for the conduct and reporting of Bayesian analyses.[@RN1200; @RN1223]
+
+## Power Analysis
+
+In the context of the proposed Bayesian analysis we have used a simulation-based approach to assess the impact on sample size on the anticipated precision of our estimates.
+
+A simulated multicenter data set of varying sample sizes [$N$] was constructed based on our preliminary single center analysis. The simulated effect of compliant PONV prophylaxis was defined on the log-odds scale as $\beta_1$= -0.105 (equivalent to an odds ratio of 0.9), while the simulated baseline incidence of PONV in the untreated (noncompliant prophylaxis) population was defined on the log-odds scale as $\gamma_0$= -2.0 (equivalent to a probability of approximately 0.12). A total of 30 hospitals [$H$] were simulated, each with a pre-determined proportion of the overall sample N. The total number of clinicians [$C$] at each hospital was randomly generated by drawing from *Binomial*(100, 0.1) with assignment to each hospital applied after sorting both hospitals and clinician sizes to allow for realistic and proportional “staffing ratios.” Probability of compliant prophylaxis (the exposure of interest) was determined for each patient assuming a population-level probability of 0.5 (log odds = 0) with both hospital and clinician level random intercepts drawn from *Normal*(0, $\sigma^2$). For the purposes of this simulation we did not explicitly include any additional patient-level predictors of treatment allocation, but the implications of such a process are discussed in subsequent sections. The log odds (and subsequently the probability) for receipt of compliant prophylaxis were then determined for each patient, and exposure allocation was determined by drawing from the Bernoulli distribution using these values. Hospital and clinician level random intercepts for PONV incidence were similarly generated by drawing from *Normal*(0, $\sigma^2$). Hospital and clinician level random slopes for the treatment effect were generated be drawing from XXX. Population-level intercept, hospital- and clinician-specific intercepts, and the treatment effect were then summed to determine the log odds of PONV for each patient, with the dichotomous outcome of PONV then derived by again drawing from the Bernoulli distribution. A formulaic representation of data generating process is outlined below.
+
+$$
+\text{PONV}_{ich} \sim \textit{Bernoulli}(p_{ich})
+$$
+$$
+\text{logit}^{-1}(p_{ich}) = \alpha_{ich} + \beta_{1}
+$$
+$$
+\alpha_{ich} = \gamma_0 + \gamma_{1c} + \gamma_{2h}
+$$
+$$
+\gamma_{1c} \sim \textit{Normal}(0, \sigma_c^2) 
+$$
+$$
+\gamma_{2h} \sim \textit{Normal}(0, \sigma_h^2)
+$$
+
+\noindent for $i = 1, \ldots, n_{ch}$, $c = 1, \ldots, C_h$, and $h = 1, \ldots, H$, where $\beta_1 = -0.105$, $\gamma_0 = -2$, $\sigma_c^2 = 0.03$ and $\sigma_h^2 = 0.03$. We then iteratively varied the sample size, and for each value of $N$ fit 50 Bayesian outcome models with the structure and priors outlined below.
+
+$$
+\text{PONV}_{ich} \sim \textit{Bernoulli}(p_{ich})
+$$
+$$
+\text{logit}^{-1}(p_{ich}) = \alpha_{ich} + \beta_{1}
+$$
+$$
+\beta_1 \sim \textit{Normal}(0, 1)
+$$
+$$
+\alpha_{ich} = \gamma_0 + \gamma_{1c} + \gamma_{2h}
+$$
+$$
+\gamma_0 \sim \textit{Normal}(-2.5, 0.75)
+$$
+$$
+\gamma_{1c} \sim \textit{Normal}(0, \sigma_c^2) 
+$$
+$$
+\gamma_{2h} \sim \textit{Normal}(0, \sigma_h^2)
+$$
+$$
+\sigma_c \sim \textit{Half-Cauchy}(0, 1)
+$$
+$$
+\sigma_h \sim \textit{Half-Cauchy}(0, 1)
+$$
+
+## Handling of Missing Data
+
+Missing covariate data will be imputed using multiple imputation with chained equations via predictive mean matching (numeric continuous variables), logistic regression (dichotomous categorical variables), or polytomous regression (multigroup categorical variables). The imputation model will be fit 20 times, generating 20 imputed datasets. Both propensity score and outcome models will be estimated once for each imputation dataset, and the posterior distributions will be pooled, similar to the approach used by *Kuck et al.*[@RN1228] Missing outcome data will not be imputed - patients with missing PONV-03 values will be excluded.
+
+## Major Threats to Inference & Mitigation Strategies
+
+In this retrospective analysis of PONV prophylaxis, the major threat to inference is the presence of confounding by indication given the non-randomized allocation of prophylaxis. As previously discussed, we will use a pseudo-Bayesian approach to propensity score weighting using overlap weights to attempt to account for *measured* confounding. Importantly, the presence of unmeasured (or unaccounted for) confounders is always plausible in such an analysis. By using a thoughtfully created causal DAG (@fig-dag) with expert collaborator input we aim to most appropriately account for confounding while acknowledging that truly unmeasured confounders may still exist.
+
+# Preliminary Data Analyses
+
+We recently conducted a single-center retrospective study evaluating the association between compliant (termed "adequate" in this manuscript) prophylaxis (as defined by PONV-04) and PONV (as defined by PONV-03) in pediatric patients undergoing general anesthesia at Duke University Hospital. This study analyzed 14,747 patients across four years (2018-2021) and used propensity-score weighted Bayesian binomial models to estimate the association of interest. The overall rate of adequate prophylaxis was 39% and the overall incidence of PONV was 10.6%. Receipt of adequate prophylaxis varied considerably across risk groups and several variables were poorly balanced across prophylaxis groups. In our primary (weighted and multivariable adjusted) outcome model there was modest evidence for a relative benefit of adequate prophylaxis, with a median odds ratio of 0.82 (95% credible interval 0.66, 1.02; @fig-odds-plot) and median marginal absolute risk reduction of 1.3% (95% credible interval -0.1%, 3.1%). Patient-specific, covariate-adjusted ARR was heterogeneous across the study population (@fig-arr-plot).
+
+```{r fig-odds-plot, echo=FALSE, dpi=600, fig.height=5, fig.width=5, fig.align='center', cache=TRUE, fig.cap="Posterior distributions for the weighted and unweighted estimates for the odds ratio (OR) for the association between adequate prophylaxis and PONV from both unadjusted and adjusted models. Dashed vertical line represents an OR of 1, with the portion of each distribution falling above this point represented with a reduction in opacity. Black points represent the median of the posterior distribution. Inner and outer slab intervals represent 66% and 95% credible intervals for the posterior median, respectively."}
+
+source("~/Desktop/projects/mpog_multi_ponv/scripts/pcrc_figures.R")
+
+or_plot
+```
+
+```{r fig-arr-plot, echo=FALSE, dpi=600, fig.height=8, fig.width=10, fig.align='center', cache=TRUE, fig.cap="Predicted covariate-adjusted absolute risk reduction (ARR) for each of the 14,747 study patients. Each patient’s predicted distribution of ARR is estimated using 2,000 draws from the weighted posterior distribution of the adjusted model. Green points represent the posterior median of the patient-specific distribution and black intervals represent 95% credible intervals for the posterior median. Patient data is ordered on the x-axis based on ascending median ARR. Red dashed line marks ARR = 0; positive ARR values represent lower risk with adequate prophylaxis."}
+
+source("~/Desktop/projects/mpog_multi_ponv/scripts/pcrc_figures.R")
+
+arr_plot
+```
+
+In an interaction model examining the association of adequate prophylaxis across the MPOG-defined risk spectrum, there was evidence for a differential association, with some benefit in lower risk patients but attenuation of this effect in high-risk groups (@fig-interaction-plot). 
+
+```{r fig-interaction-plot, echo=FALSE, dpi=600, fig.height=15, fig.width=15, fig.align='center', cache=TRUE, fig.cap="Probability of PONV (A), and absolute risk reduction of adequate prophylaxis (B) stratified by appropriateness of prophylaxis and sum of MPOG PONV risk factors. Unweighted (left plot) and weighted (right plot) estimates are shown, and are generated using 16,000 draws from each model’s respective posterior distribution. Points represent the median of the posterior distribution and inner & outer intervals represent 66% and 95% credible intervals for the posterior median, respectively. Note the differential association between appropriate prophylaxis and PONV risk across the spectrum of risk scores in the unweighted estimates, with subsequent attenuation of this phenomenon following propensity score weighting. Black dashed line in (B) marks ARR = 0. See text for definition and values of the conditional probabilities of benefit at each level of risk summation. PONV - postoperative nausea and vomiting."}
+
+source("~/Desktop/projects/mpog_multi_ponv/scripts/pcrc_figures.R")
+
+interaction_grid
+```
+
+
+
+# Areas for Discussion & Known Limitations
+
+Variability in reporting and objective documentation of nausea and/or vomiting compared to the administration of rescue antiemetic agents is a limitation of the primary outcome for the proposed study. As discussed briefly in earlier sections, while the majority of antiemetic administration in the PACU is likely to be true *rescue* and thus a valid surrogate endpoint for PONV, there is almost certainly some proportion of antiemetic administration that is not explicitly linked to the occurence of PONV. For example, the continuation of *prophylaxis* in the PACU for a patient deemed to be *high risk* be the perioperative team may lead to antiemetic administration in a patient without symptoms and missclassification of the outcome of interest. Similarly, a patient having outpatient surgery who is due to be discharged may receive a *top-op* of an antiemetic prior to discontinuation of their peripheral IV in hopes of suppressing post-discharge nausea and vomiting despite not currently having symptoms. Again, this would lead to misclassification of the outcome of interest. While data contained within the MPOG database is not capable of resolving this potential limitation (something only possible prospective collection of objective measures of nausea and vomiting), we plan to examine the 
+
