@@ -102,11 +102,13 @@ library(ggdag)
 library(MetBrewer)
 library(showtext)
 library(sysfonts)
-library(ggplot2)
+library(tidyverse)
 library(tidybayes)
 library(ggsci)
 library(cowplot)
 library(tidytext)
+library(brms)
+library(forcats)
 
 sysfonts::font_add_google("Archivo Narrow", family = "Archivo Narrow")
 sysfonts::font_add_google("Pragati Narrow", family = "Pragati Narrow")
@@ -115,6 +117,8 @@ showtext::showtext_auto()
 isfahan <- MetBrewer::met.brewer("Isfahan1")
 degas <- MetBrewer::met.brewer("Degas")
 redon <- MetBrewer::met.brewer("Redon")
+renoir <- MetBrewer::met.brewer("Renoir")
+d3 <- pal_d3("category10")(10)
 
 theme_nice <- function() {
   theme_minimal(base_family = "Archivo Narrow") +
