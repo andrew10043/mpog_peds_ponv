@@ -15,6 +15,11 @@ mathfont: "Libertinus Math"
 include-in-header: 
   text: |
     \definecolor{dukeblue}{HTML}{00539B}
+    \usepackage[bottom, flushmargin]{footmisc}
+    \renewcommand*{\footnotelayout}{\footnotesize}
+    \addtolength{\skip\footins}{10pt}    % vertical space between rule and main text
+    \setlength{\footnotesep}{5pt}  % vertical space between footnotes
+
 linkcolor: dukeblue
 urlcolor: dukeblue
 citecolor: dukeblue
@@ -24,6 +29,8 @@ geometry:
   - bottom=0.5in
   - left=0.5in
   - right=0.5in
+date: "April 26, 2023"
+date-format: full
 ---
 
 ```{=tex}
@@ -65,3 +72,9 @@ Proposal for A Multicenter Retrospective Observational Cohort Study
 | **Resources**            | The primary author will be a clinical fellow in pediatric anesthesiology at Duke beginning August 1, 2023, with one day of dedicated non-clinical time per week. Additional support from the [Duke Critical Care and Perioperative Population Health Research (CAPER)](https://anesthesiology.duke.edu/research/caper) group                                                                                                                                                                                        |
 
 : {tbl-colwidths="\[20, 80\]"}
+
+\small
+Last updated: {{< meta date >}}
+
+\footnotesize
+Replication materials for this proposal and project are available at: <https://github.com/andrew10043/mpog_peds_ponv>.
