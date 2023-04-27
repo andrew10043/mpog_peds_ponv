@@ -46,7 +46,7 @@ site_prop <- c(0.032, 0.031, 0.065, 0.114, 0.014, 0.031, 0.065, 0.046, 0.038, 0.
 
 n_sites <- length(site_prop)
 
-total_n <- 100000
+total_n <- 200000
 
 site_n <- total_n * site_prop %>% sort(decreasing = TRUE)
 
@@ -115,6 +115,7 @@ sim_and_fit <- function(seed, n) {
   df <- make_df(n_sites, site_n, site_clinician_n, clinician_markers)
   
   print(dim(df))
+  print(seed)
   
   # Update model fit
   update(fit,
@@ -132,28 +133,28 @@ sim_and_fit <- function(seed, n) {
 
 # Generate simulations and models
 # Extract param
-s1k <- tibble(seed = 1:50) %>%
+power_1k <- tibble(seed = 1:50) %>%
   mutate(b1 = map(seed, sim_and_fit, n = 1000)) %>%
   unnest(b1) %>%
   mutate(width = Q97.5 - Q2.5)
 
-s10k <- tibble(seed = 1:50) %>%
+power_10k <- tibble(seed = 1:50) %>%
   mutate(b1 = map(seed, sim_and_fit, n = 10000)) %>%
   unnest(b1) %>%
   mutate(width = Q97.5 - Q2.5)
 
-s100k <- tibble(seed = 1:50) %>%
+power_100k <- tibble(seed = 1:50) %>%
   mutate(b1 = map(seed, sim_and_fit, n = 100000)) %>%
   unnest(b1) %>%
   mutate(width = Q97.5 - Q2.5)
 
-s10k %>%
-  ggplot(aes(x = reorder(seed, Q2.5), y = Estimate, ymin = Q2.5, ymax = Q97.5)) +
-  geom_hline(yintercept = c(0, true_beta), color = "white") +
-  geom_pointrange(fatten = 1/2) +
-  scale_x_discrete("reordered by the lower level of the 95% intervals", breaks = NULL) +
-  ylab(expression(beta[1])) 
+power_sims <- rbind(
+  power_1k %>% mutate(n = "1k"),
+  power_10k %>% mutate(n = "10k")) %>%
+  rbind(power_100k %>% mutate(n = "100k")) %>%
+  mutate(n = factor(n, levels = c("1k", "10k", "100k")))
 
-write_rds(s1k, "data/power_1k.rds")
-write_rds(s10k, "data/power_10k.rds")
-write_rds(s100k, "data/power_10k.rds")
+write_rds(power_1k, "data/power_1k.rds")
+write_rds(power_10k, "data/power_10k.rds")
+write_rds(power_100k, "data/power_100k.rds")
+write_rds(power_sims, "data/power_sims.rds")

@@ -41,7 +41,7 @@ abstract: |-
 code-repo: "Replication materials for this proposal and project are available at <https://github.com/andrew10043/mpog_peds_ponv>"
 thanks: |-
   This is a preliminary proposal prepared for review by the Perioperative Clinical Research Committee (PCRC).
-date: April 25, 2023
+date: April 27, 2023
 keywords: 
   - postoperative nausea and vomiting
   - pediatric anesthesioloy
@@ -319,9 +319,9 @@ Variables outlined in the table below will be sourced from the PONV-03 and PONV-
 
 As we aim to estimate the causal effect of compliant prophylaxis on the incidence of PONV, there are several methodological challenges we must first consider. Chief among these is the presence of confounding, particularly confounding by indication, that will severely bias the estimate of interest if not accounted for. Propensity score (PS) weighting is one of many causal inference tools that is capable of controlling for *measured* confounding in the estimation of the causal effect of interest. Several weighting approaches have been described, two of which we will explore in the proposed analysis: weighting using (1) inverse probability of treatment weights (IPTW) and (2) overlap weights (OW). These weights differ in their approach to the construction of *pseudo-populations* and, in turn, represent approaches to two different causal estimands. Weighting using IPTW, which assigns weights of $\frac{1}{PS}$ to treated patients and $\frac{1}{1-PS}$ to untreated patients, targets the *average treatment effect* (ATE) - the estimand most often used in randomized trials. Alternatively, weighting using overlap weights, which assigns weights of $1-PS$ for treated patients and $PS$ to untreated patients, targets the ATE in the *overlap population* - the group of patients with similar propensities to receive or not receive the exposure (i.e., those with *clinical equipoise*).
 
-The typical approach to confounder adjustment using propensity score weighting involves the sequential fitting of two frequentist statistical models. A design stage logistic regression model which is used to generate point estimates of propensity scores for each patient, which are then used to weight observations in the subsequent outcome model. Given the many benefits of Bayesian inference, an attractive alternative to this frequentist approach is to combine propensity score weighting with Bayesian outcome modeling. Among other potential advantages, this approach would allow for the propagation of uncertainty in the estimation of the propensity score model through to the outcome model. This represents an area of considerable debate, and while several approaches have been explored, *Liao and Zigler*[@RN1206] outlined a *pseudo-Bayesian* two-stage approach in which a propensity score model is estimated, and the outcome model is then fit many times using sampled weights from the posterior distribution of the propensity score model. Alternatively, the outcome model can iteratively sample from the posterior distribution of weights at each step in the MCMC algorithm, reducing the need to fit many thousands of outcome models. Unfortunately, even the latter approach becomes computationally difficult with larger samples sizes, particularly those present in large multicenter databases.
+The typical approach to confounder adjustment using propensity score weighting involves the sequential fitting of two frequentist statistical models. A design stage logistic regression model which is used to generate point estimates of propensity scores for each patient, which are then used to weight observations in the subsequent outcome model. Given the many benefits of Bayesian inference, an attractive alternative to this frequentist approach is to combine propensity score weighting with Bayesian outcome modeling. Among other potential advantages, this approach would allow for the propagation of uncertainty in the estimation of the propensity score model through to the outcome model. This represents an area of considerable debate, and while several approaches have been explored, *Liao* and *Zigler*[@RN1206] outlined a *pseudo-Bayesian* two-stage approach in which a propensity score model is estimated, and the outcome model is then fit many times using sampled weights from the posterior distribution of the propensity score model. Alternatively, the outcome model can iteratively sample from the posterior distribution of weights at each step in the MCMC algorithm, reducing the need to fit many thousands of outcome models. Unfortunately, even the latter approach becomes computationally difficult with larger samples sizes, particularly those present in large multicenter databases.
 
-More recently, *Nafa and Heiss*[@RN1230] have outlined an approach aimed and circumventing this issue by using only the location and scale of the propensity score weights in the outcome model and propagating the "uncertainty by placing a prior on the scale component of the weights." Here, they parameterize propensity score weights as:
+More recently, *Nafa* and *Heiss*[@RN1230] have outlined an approach aimed and circumventing this issue by using only the location and scale of the propensity score weights in the outcome model and propagating the "uncertainty by placing a prior on the scale component of the weights." Here, they parameterize propensity score weights as:
 
 $$
 \tilde{w}_{i} = \kappa_{i} + \lambda_{i}\cdot\pi(\lambda)
@@ -336,7 +336,7 @@ Propensity score estimation in the setting of clustered data represents represen
 \noindent In a **single-level** propensity score model, the clustered structure is ignored, and the propensity score is estimated as:
 
 $$
-\textit{logit }(pi_{ich}) = \beta_0 + \beta_{1}X_{ich} + \beta_{2}K_{ch} + \beta_{3}Z_{h}
+\textit{logit }(p_{ich}) = \beta_0 + \beta_{1}X_{ich} + \beta_{2}K_{ch} + \beta_{3}Z_{h}
 $$
 
 \noindent where, $\beta_0$ is a fixed intercept, and $\beta_{1}$, $\beta_{2}$, and $\beta{3}$ are fixed coefficients for individual-level ($X_{ich}$), clinician-level ($K_{ch}$) and hospital-level ($Z_{h}$) covariates. Implicit in this model structure is the assumption that no confounding persists following conditioning on observed covariates ($X_{ich}$, $K_{ch}$, and $Z_{h}$). However this is unlikely, particularly in the setting of *central* clustering.[@RN1232]
@@ -344,16 +344,16 @@ $$
 \noindent In a **fixed effects** propensity score model, cluster-specific fixed intercepts are included:
 
 $$
-\textit{logit }(pi_{ich}){} = \beta_{0} + \beta_{0c} + \beta_{0h} + \beta_{1}X_{ich}\\
+\textit{logit }(p_{ich}){} = \beta_{0} + \beta_{0c} + \beta_{0h} + \beta_{1}X_{ich}\\
 $$
 
-\noindent where, $\beta_0$ is a fixed population intercept, and $\beta_{0c}$ and $\beta_{0h}$ are fixed intercepts (i.e., coefficients for cluster-level indicator variables) for hospital and clinician-clusters. This can be extended to include interactions between cluster membership and individual-level covariates (or across-cluster interactions). These models do not explicitly include cluster-level covariates ($K_{ch}$, and $Z_{h}$) as the intercepts fully absorb the effects of both observed and unobserved covariates at the cluster level (e.g., all cluster-specific covariates in a given cluster will be identical). However, when extended to this three-level example, this model structure does not easily take into account the nested nature of the clustered data (e.g., clinicians within hospitals) and requires estimation of a very large number of parameters.
+\noindent where, $\beta_0$ is a fixed population intercept, and $\beta_{0c}$ and $\beta_{0h}$ are fixed intercepts (i.e., coefficients for cluster-level indicator variables) for hospital and clinician-clusters. This can be extended to include interactions between cluster membership and individual-level covariates (or across-cluster interactions). These models do not explicitly include cluster-level covariates ($K_{ch}$, and $Z_{h}$) as the intercepts fully absorb the effects of both observed and unobserved covariates at the cluster level (e.g., all cluster-specific covariates in a given cluster will be identical). However, when extended to this three-level example, this model structure does not easily take into account the nested nature of the clustered data (e.g., clinicians within hospitals) and requires estimation of a very large number of parameters. Further, at the clinician level there will be many very small clusters, adding to the difficulty in fitting a fixed effect term at this level.
 
 \noindent Finally, in a **random effects** propensity score model, cluster-specific random intercepts are included:
 
 $$
 \begin{aligned}
-\textit{logit }(pi_{ich}){} &= \beta_{0ch} + \beta_{1}X_{ich} + \beta_{2}K_{ch} + \beta_{3}Z_{h}\\
+\textit{logit }(p_{ich}){} &= \beta_{0ch} + \beta_{1}X_{ich} + \beta_{2}K_{ch} + \beta_{3}Z_{h}\\
 \beta_{0ch}{}               &= \delta_{00h} + U_{0ch}\\
 \delta_{00h}{}              &= \gamma_{000} + V_{00h}\\
 \end{aligned}
@@ -367,7 +367,7 @@ Taken together, evidence from simulation studies appears to favor a fixed effect
 
 $$
 \begin{aligned}
-\textit{logit }(pi_{ich}){} &= \beta_{0ch} + \beta_{1}X_{ich} + \beta_{2}K_{ch} + \beta_{3}Z_{h}\\
+\textit{logit }(p_{ich}){} &= \beta_{0ch} + \beta_{1}X_{ich} + \beta_{2}K_{ch} + \beta_{3}Z_{h}\\
 \beta_{0ch}{}               &= \delta_{00h} + U_{0ch}\\
 \delta_{00h}{}              &= \gamma_{000} + \theta_{00h}\\
 \end{aligned}
@@ -586,7 +586,7 @@ rho_prior_plot <-
   df %>%
   ggplot() + 
   stat_halfeye(aes(x = rho),
-               fill = isfahan[6]) +
+               fill = renoir[3]) +
   labs(x = expression(bold(rho)),
        y = "Density") + 
   coord_cartesian(xlim = c(-1, 1)) +
@@ -596,7 +596,7 @@ sd_prior_plot <-
   df %>%
   ggplot() + 
   stat_halfeye(aes(x = sd),
-               fill = isfahan[1]) +
+               fill = renoir[9]) +
   labs(x = expression(paste(phi, " & ", tau)),
        y = "Density") + 
   xlim(0, 10) + 
@@ -621,7 +621,7 @@ As previously described, we will perform several sensitivity analyses using alte
 
 ### Power Analysis
 
-In the context of the proposed Bayesian analysis we have used a simulation-based approach to assess the impact on sample size on the anticipated precision of our estimates. A simulated multicenter data set of varying sample sizes \[$N$\] was constructed based on our preliminary single center analysis. Model structure is similar to that outlined in the above sections. The simulated fixed effect of compliant PONV prophylaxis was defined on the log-odds scale as $\gamma_{100}$= -0.105 (equivalent to an odds ratio of 0.9), while the simulated fixed intercept was defined on the log-odds scale as $\gamma_{000}$= -2.0 (equivalent to a probability of approximately 0.12). A total of 30 hospitals \[$H$\] were simulated, each with a pre-determined proportion of the overall sample $N$. The total number of clinicians \[$C$\] at each hospital was randomly generated by drawing from *Binomial*(100, 0.1) with assignment to each hospital applied after sorting both hospitals and clinician sizes to allow for realistic and proportional "staffing ratios." Probability of compliant prophylaxis (the exposure of interest) was determined for each patient assuming a population-level probability of 0.5 (log odds = 0) with both hospital and clinician level random intercepts drawn from $\textit{Normal }(0, \sigma^2)$. For the purposes of this simulation we did not explicitly include any additional patient-level predictors of treatment allocation (e.g., the design stage model). The probability of receipt of compliant prophylaxis was determined for each patient, and exposure allocation was determined by drawing from $\textit{Bernoulli }(p_{compliant})$. Clinician- and hospital-level random intercepts ($U_{0ch}$ and $V_{00h}$) and slopes ($U_{1ch}$ and $V_{10h}$) were generated by drawing from the multivariate normal distribution. A formulaic representation of the data generating process is outlined below.
+In the context of the proposed Bayesian analysis we have used a simulation-based approach to assess the impact on sample size on the anticipated precision of our estimates. A simulated multicenter data set of varying sample sizes \[$N$\] was constructed based on our preliminary single center analysis. Model structure is similar to that outlined in the above sections. The simulated fixed effect of compliant PONV prophylaxis was defined on the log-odds scale as $\gamma_{100}$= -0.105 (equivalent to an odds ratio of 0.9), while the simulated fixed intercept was defined on the log-odds scale as $\gamma_{000}$= -2.0 (equivalent to a probability of approximately 0.12). A total of 30 hospitals \[$H$\] were simulated, each with a pre-determined proportion of the overall sample $N$. The total number of clinicians \[$C$\] at each hospital was randomly generated by drawing from *Binomial*(100, 0.1) with assignment to each hospital applied after sorting both hospitals and clinician sizes to allow for realistic and proportional "staffing ratios." Probability of compliant prophylaxis (the exposure of interest) was determined for each patient assuming a population-level probability of 0.5 (log odds = 0) with both hospital and clinician level random intercepts drawn from $\textit{Normal }(0, \sigma^2)$. For the purposes of this simulation we did not explicitly include any additional patient-level predictors of treatment allocation (e.g., the design stage model). The probability of receipt of compliant prophylaxis was calculated for each patient, and exposure allocation was determined by drawing from $\textit{Bernoulli }(p_{compliant})$. Clinician- and hospital-level random intercepts ($U_{0ch}$ and $V_{00h}$) and slopes ($U_{1ch}$ and $V_{10h}$) were generated by drawing from the multivariate normal distribution. A formulaic representation of the data generating process is outlined below.
 
 $$
 \begin{aligned}
@@ -712,12 +712,116 @@ $$
 \tau_{01}{}    & = 0.03\\
 \phi_{00}{}    & = 0.03\\
 \phi_{00}{}    & = 0.03\\
-R_c = \begin{pmatrix} 1 & -0.1 \\ -0.1 & 1 \end{pmatrix} \ {}& \ 
-R_h = \begin{pmatrix} 1 & -0.1 \\ -0.1 & 1 \end{pmatrix}\\
+R_c = \begin{pmatrix} 1 & -0.2 \\ -0.2 & 1 \end{pmatrix} \ {}& \ 
+R_h = \begin{pmatrix} 1 & -0.2 \\ -0.2 & 1 \end{pmatrix}\\
 \end{aligned}
 $$
 
-\noindent for $i = 1, \ldots, n_{ch}$, $c = 1, \ldots, C_h$, and $h = 1, \ldots, H$. We then iteratively varied the sample size ($N$ = 1000, 10,000, 100,000), and for each value of $N$ fit 50 Bayesian outcome models with the structure and priors as outlined in the outcome modeling section. The basic results of the stimulations are shown in the plots below. Panel (A) shows posterior distributions of the fixed effect estimates ($\gamma_{100}$) accompanied by their 95% credible intervals, while panel (B) shows the distribution of 95% credible interval widths.
+\noindent for $i = 1, \ldots, n_{ch}$, $c = 1, \ldots, C_h$, and $h = 1, \ldots, H$. We then iteratively varied the sample size ($N$ = 1000, 10,000, 100,000), and for each value of $N$ fit 50 Bayesian outcome models with the structure and priors as outlined in the outcome modeling section. The basic results of the stimulation are shown in the plots below. @fig-power-facet shows posterior distributions of the odds ratio for the fixed effect estimates ($\gamma_{100}$) accompanied by their 95% credible intervals. 
+
+```{r fig-power-facet, echo=FALSE, dpi=600, fig.height=6, fig.width=10, fig.align='center', cache=TRUE, fig.cap="Precision simulation results. Each facet represents a different total sample size (N). For each facet (N), 50 simulations were performed, and each is represented by the posterior median odds ratio (point) and 95% credible intervals (lines), ordered by median OR. The red line marks OR = 1 (no effect) while the blue line marks OR = 0.9 (the true simulated effect). The N = 100,000 facet contains an inset to more easily display the precision of these estimates around the true simulated value."}
+
+## Custom annotation function
+## From https://www.blopig.com/blog/2019/08/combining-inset-plots-with-facets-using-ggplot2/
+annotation_custom2 <- function (grob, xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf, data) 
+{
+  layer(data = data, stat = StatIdentity, position = PositionIdentity, 
+        geom = ggplot2:::GeomCustomAnn,
+        inherit.aes = TRUE, params = list(grob = grob, 
+                                          xmin = xmin, xmax = xmax, 
+                                          ymin = ymin, ymax = ymax))
+}
+
+power_sims <- readRDS("~/Desktop/projects/mpog_multi_ponv/data/power_sims.rds")
+
+labs <- c("N = 1000", "N = 10,000", "N = 100,000")
+names(labs) <- c("1k", "10k", "100k")
+
+main_plot <- 
+  ggplot(data = power_sims, aes(x = reorder_within(seed, exp(Estimate), n), 
+                                y = exp(Estimate), ymin = exp(Q2.5), 
+                                ymax = exp(Q97.5))) +
+    geom_hline(yintercept = 0.9, color = renoir[4]) +
+    geom_hline(yintercept = 1, color = renoir[6]) +
+    geom_pointrange(fatten = 1/2) + 
+    scale_x_reordered("Simulations (n = 50)", breaks = NULL) +
+    coord_cartesian(ylim = c(0, 2.5)) + 
+    facet_wrap(~ n, scales = "free_x",
+               labeller = labeller(n = labs)) + 
+    ylab(expression(exp(gamma[100]))) + 
+    theme(panel.spacing = unit(2, "lines"),
+          strip.background = element_rect(fill = "white"),
+          axis.text = element_text(size = 14),
+          axis.title.x = element_text(size = 16),
+          axis.title.y = element_text(family = "times", face = "bold", size = 12),
+          strip.text = element_text(size = 16))
+
+inset_plot <- 
+  ggplot(data = power_sims %>% filter(n == "100k"), 
+         aes(x = reorder(seed, exp(Estimate)),
+             y = exp(Estimate), ymin = exp(Q2.5), ymax = exp(Q97.5))) + 
+  geom_hline(yintercept = 0.9, color = renoir[4]) +
+  geom_hline(yintercept = 1, color = renoir[6]) +
+  geom_pointrange(fatten = 1/2) + 
+  scale_x_discrete(breaks = NULL) +
+  scale_y_continuous(limits = c(0.8, 1.1),
+                     breaks = c(0.8, 0.9, 1, 1.1)) +
+  labs(x = NULL, y = NULL) + 
+  theme(plot.background = element_rect(color = "black"),
+        axis.text = element_text(size = 12))
+
+main_plot +
+  annotation_custom2(grob = ggplotGrob(inset_plot), data = power_sims %>% filter(n == "100k"), ymin = 1.5, ymax = 2.45, xmin = 0, xmax = 50)
+```
+
+In these simulations we find that the precision in our effect estimate of interest rapidly increases as sample size moves from 1,000 to 100,000 at which point all 95% credible intervals no longer include OR = 1. As an alternative visual representation of the precision of these estimates we can examine the distribution of their widths (on the OR scale). This is shown in @fig-power-width below.
+
+```{r fig-power-width, echo=FALSE, dpi=600, fig.height=4, fig.width=10, fig.align='center', cache=TRUE, fig.cap="Precision simulation results. Again, each facet represents a different total sample size (N). Here we show the distribution of the widths of the 95% credible interval for the OR, an alternative metric for assessing the precision of our estimates. Facets for N = 10,000 and N = 100,000 contain insets to more clearly show the distribution of widths for these cases."}
+
+main_plot <- 
+  ggplot(data = power_sims,
+         aes(x = exp(Q97.5) - exp(Q2.5))) +
+    geom_histogram(fill = renoir[12], color = "white") + 
+    facet_wrap(~ n, scales = "fixed",
+               labeller = labeller(n = labs)) + 
+    labs(y = "Count",
+         x = "Width of 95% Credible Interval for OR") + 
+    theme(panel.spacing = unit(2, "lines"),
+          panel.background = element_rect(color = "black"),
+          strip.background = element_rect(fill = "white"),
+          axis.text = element_text(size = 14),
+          axis.title = element_text(size = 16),
+          strip.text = element_text(size = 16))
+
+inset_plot_100 <-
+  ggplot(data = power_sims %>% filter(n == "100k")) + 
+  geom_histogram(bins = 50, aes(x = exp(Q97.5) - exp(Q2.5)), 
+                 fill = renoir[12], color = "white") + 
+  scale_y_continuous(limits = c(0, 15), breaks = seq(0, 15, by = 5)) +
+  scale_x_continuous(limits = c(0, 0.11), breaks = c(0, 0.025, 0.05, 0.075, 0.1),
+                     labels = c(0, "", 0.05, "", 0.01)) + 
+  labs(x = NULL, y = NULL) + 
+  theme(plot.background = element_rect(color = "black"),
+        axis.text = element_text(size = 12))
+
+inset_plot_10 <-
+  ggplot(data = power_sims %>% filter(n == "10k")) + 
+  geom_histogram(bins = 50, aes(x = exp(Q97.5) - exp(Q2.5)), 
+                 fill = renoir[12], color = "white") + 
+  scale_x_continuous(limits = c(0, 0.4), breaks = c(0, 0.1, 0.2, 0.3, 0.4),
+                     labels = c(0, "", 0.2, "", 0.4)) + 
+  scale_y_continuous(limits = c(0, 15),
+                     breaks = seq(0, 15, by = 5)) + 
+  labs(x = NULL, y = NULL) + 
+  theme(plot.background = element_rect(color = "black"),
+        axis.text = element_text(size = 12))
+
+main_plot +
+  annotation_custom2(grob = ggplotGrob(inset_plot_100), data = power_sims %>% filter(n == "100k"), ymin = 1, ymax = 20, xmin = 0.45, xmax = 1.45) + 
+  annotation_custom2(grob = ggplotGrob(inset_plot_10), data = power_sims %>% filter(n == "10k"), ymin = 1, ymax = 20, xmin = 0.45, xmax = 1.45)
+```
+
+Examining the inset of the N = 100,000 simulation, we see that all 95% credible intervals for the OR of interest were < 0.1 in width, representing very precise estimates. Given the excellent results obtained from the N = 100,000 simulation, further increases in sample size were not pursued. For reference, each 100,000 sample model in this simulation took approximately ~23 minutes to run.
 
 ### Handling of Missing Data
 
@@ -733,7 +837,7 @@ In this retrospective analysis of PONV prophylaxis, the major threat to inferenc
 
 # Preliminary Data Analyses
 
-We recently conducted a single-center retrospective study evaluating the association between compliant (termed "adequate" in this manuscript) prophylaxis (as defined by PONV-04) and PONV (as defined by PONV-03) in pediatric patients undergoing general anesthesia at Duke University Hospital. This study analyzed 14,747 patients across four years (2018-2021) and used propensity-score weighted Bayesian binomial models to estimate the association of interest. In this study we used an approach similar to that outlined by *Liao and Zigler*[@RN1206] for the pseudo-Bayesian implementation of propensity score weighting. Given the relatively smaller sample size, it was computationally feasible to iterate through the posterior distribution of the propensity score model while fitting the outcome model, thus incorporating the uncertainty in propensity score estimation into the outcome effect estimates. The overall rate of adequate prophylaxis in the cohort was 39% and the overall incidence of PONV was 10.6%. Receipt of adequate prophylaxis varied considerably across risk groups and several variables were poorly balanced across prophylaxis groups. In our primary (weighted and multivariable adjusted) outcome model there was modest evidence for a relative benefit of adequate prophylaxis, with a median odds ratio of 0.82 (95% credible interval 0.66, 1.02; @fig-odds-plot).
+We recently conducted a single-center retrospective study evaluating the association between compliant (termed "adequate" in this manuscript) prophylaxis (as defined by PONV-04) and PONV (as defined by PONV-03) in pediatric patients undergoing general anesthesia at Duke University Hospital. This study analyzed 14,747 patients across four years (2018-2021) and used propensity-score weighted Bayesian binomial models to estimate the association of interest. In this study we used an approach similar to that outlined by *Liao* and *Zigler*[@RN1206] for the pseudo-Bayesian implementation of propensity score weighting. Given the relatively smaller sample size, it was computationally feasible to iterate through the posterior distribution of the propensity score model while fitting the outcome model, thus incorporating the uncertainty in propensity score estimation into the outcome effect estimates. The overall rate of adequate prophylaxis in the cohort was 39% and the overall incidence of PONV was 10.6%. Receipt of adequate prophylaxis varied considerably across risk groups and several variables were poorly balanced across prophylaxis groups. In our primary (weighted and multivariable adjusted) outcome model there was modest evidence for a relative benefit of adequate prophylaxis, with a median odds ratio of 0.82 (95% credible interval 0.66, 1.02; @fig-odds-plot).
 
 ```{r fig-odds-plot, echo=FALSE, dpi=600, fig.height=4, fig.width=4, fig.align='center', cache=TRUE, fig.cap="Posterior distributions for the weighted and unweighted estimates for the odds ratio (OR) for the association between adequate prophylaxis and PONV from both unadjusted and adjusted models. Dashed vertical line represents an OR of 1, with the portion of each distribution falling above this point represented with a reduction in opacity. Black points represent the median of the posterior distribution. Inner and outer slab intervals represent 66% and 95% credible intervals, respectively."}
 
