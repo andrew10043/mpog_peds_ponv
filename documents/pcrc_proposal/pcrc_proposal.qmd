@@ -1,6 +1,6 @@
 ---
 title: "The Association of Guideline Directed Prophylaxis with the Incidence of Postoperative Nausea and Vomiting in Pediatric Patients"
-subtitle: "Proposal for A Multicenter Retrospective Observational Cohort Study"
+subtitle: "Proposal for A Multicenter Retrospective Observational Cohort Study using the Multicenter Perioperative Outcomes Group (MPOG) Database"
 short-title: "Pediatric PONV Prophylaxis"
 author:
   - name: "Benjamin Y. Andrew, MD, MHS"
@@ -41,7 +41,7 @@ abstract: |-
 code-repo: "Replication materials for this proposal and project are available at <https://github.com/andrew10043/mpog_peds_ponv>"
 thanks: |-
   This is a preliminary proposal prepared for review by the Perioperative Clinical Research Committee (PCRC).
-date: April 27, 2023
+date: May 15, 2023
 keywords: 
   - postoperative nausea and vomiting
   - pediatric anesthesioloy
@@ -159,14 +159,14 @@ It follows, then, that the primary aim of the proposed analysis is to estimate t
 
 ## Study Design
 
-This is a retrospective cohort study with IRB approval from the Duke University Health System (Pro00112464). All future documentation will adhere to reporting guidelines as outlined by the Strengthening the Reporting of Observational Studies in Epidemiology (STROBE) statement[@RN1201] as well as guidelines for the conduct and reporting of Bayesian analyses.[@RN1200; @RN1223] In an effort to promote open science and reproducibility, the majority of the data processing and analytic scripts used for this project will be maintained at: <https://github.com/andrew10043/mpog_peds_ponv>.
+This is a retrospective cohort study with IRB approval from the Duke University Health System (Pro00112464). All future documentation will adhere to reporting guidelines as outlined by the Strengthening the Reporting of Observational Studies in Epidemiology (STROBE) statement[@RN1201], the REporting of studies Conducted using Observational Routinely-collected Data (RECORD) statement[@RN1237], as well as guidelines for the conduct and reporting of Bayesian analyses.[@RN1200; @RN1223] A preliminary RECORD checklist has been submitted in tandem with this proposal. In an effort to promote open science and reproducibility, the majority of the data processing and analytic scripts used for this project will be maintained at: <https://github.com/andrew10043/mpog_peds_ponv>.
 
 ## Study Population
 
-We will include all patients age 3-17 undergoing general anesthesia at participating institutions from January 1st, 2015 through December 31st, 2023. Complete inclusion and exclusion criteria are outlined below:
+We will include all patients age 3-17 undergoing general anesthesia at participating institutions from January 1st, 2015 through January 31st, 2023. Complete inclusion and exclusion criteria are outlined below:
 
 -   Inclusion criteria
-    -   Procedure date from 01/01/2018 - 12/31/2023
+    -   Procedure date from 01/01/2018 - 01/31/2023
     -   General anesthetic encounter $\geq$ 15 minutes
     -   Age at time of procedure $\geq$ 3 years
 -   Exclusion criteria
@@ -179,11 +179,15 @@ We will include all patients age 3-17 undergoing general anesthesia at participa
     -   Electroconvulsive therapy
     -   Labor epidural encounters
     -   Cesarean deliveries
-    -   Radiation oncology procedures
-    -   Radiology procedures
-    -   Non-operative cases
-    -   All additional cases marked as *excluded* from either PONV-04 or PONV-03 metrics
     -   All cases with missing PONV-03 outcome data
+
+In addition to this primary cohort, we are also planning to examine the association between prohpylaxis and PONV outcomes in a more restricted population, isolating only major operative interventions. This more selective cohort would further exclude:
+
+-   Radiation oncology procedures
+-   Radiology procedures
+-   Non-operative cases
+    
+Finally, while the MPOG PONV-04 metric explicitly excludes paitents under the age of three, this is not a shared exclusion with the formal published guidelines, which use age < 3 as a sigle risk factor (rather than an exclusion from consideration for prophylaxis). To examine the association of interest more completely and to understand the implications of the guidelines in this younger population, we will also use an expanded cohort of all patients $\leq$ 17 years of age.
 
 ## Data Source
 
@@ -364,6 +368,8 @@ $$
 A number of authors have explored the topic of propensity score model construction in clustered data, using simulations to assess various combinations of approaches with respect to their ability to generate unbiased estimates. *Li* and colleagues showed that estimators ignoring clustering in *both* the propensity score model and outcome model had much larger bias than those considering clustering in at least one stage.[@RN1234] However, ignoring clustering in the outcome model appeared to be more detrimental than ignoring it in the propensity score model. Separately, *Fuentes* and colleagues extensively examined the properties of propensity score modeling approaches in multilevel data, including the application of various weighting techniques.[@RN1231] They showed that both fixed effects and *correctly specified* (i.e., inclusion of all relevant cluster-specific variables) random effects approaches to estimating propensity scores yielded unbiased results, however there is increased bias with a misspecified random effects model. With respect to covariate-by-cluster interactions (i.e., differential treatment allocation mechanisms across clusters), random slope/intercept models using overlap weights were most successful, however fixed effect approaches with overlap weights were also adequate when cluster size was large. Importantly, these simulations did not include correlated unmeasured cluster-level confounders, which would theoretically bias the random effects model.[@RN1231]
 
 Taken together, evidence from simulation studies appears to favor a fixed effects approach to specification of the propensity score model, as this avoids the likely scenario in which unmeasured cluster-level confounders lead to a biased estimate when using random effects models. However, a strictly fixed effects approach in the proposed setting is relatively unattractive given the fully nested nature of the clusters and the large number of clinician-level clusters, many of which may be quite small. One alternative may be a hybrid approach, in which hospital is modeled as a fixed effect, with nested random effects for clinician within hospitals. This allows for the advantage of fixed effects at the hospital-level (where unobserved cluster-level confounding is arguably more likely) while respecting the nested nature of the data generating process. Such a parameterization is shown below:
+
+## Testing
 
 $$
 \begin{aligned}
@@ -621,6 +627,13 @@ For the purposes of modeling, all continuous numeric variables will be centered 
 As previously described, we will perform several sensitivity analyses using alternative prior specifications. Additionally, we will examine the implications of the differential definition of compliant prophylaxis as written in the consensus guidelines and those published by MPOG as well as the outcome of documented PONV alone (without consideration of resuce antiemetic agents). Finally, we will explore the heterogeneity of PONV and the relationship between prophylaxis and PONV across centers to understand more about the surrogate nature of the PONV-03 outcome and any practice/documentation patterns that exist across institutions.
 
 ### Power Analysis
+
+Preliminary assessment of available observations using variable exclusion criteria (as noted in the study population section above) via DataDirect query yielded the following estimates of sample size:
+
+1. Ages 3-17, broad procedural group: 1,145,931
+2. Ages 3-17, limited procedural group: 1,130,173
+3. Ages 0-17, broad procedural group: 1,546,639
+4. Ages 0-17, limited procedural group: 1,523,473
 
 In the context of the proposed Bayesian analysis we have used a simulation-based approach to assess the impact on sample size on the anticipated precision of our estimates. A simulated multicenter data set of varying sample sizes \[$N$\] was constructed based on our preliminary single center analysis. Model structure is similar to that outlined in the above sections. The simulated fixed effect of compliant PONV prophylaxis was defined on the log-odds scale as $\gamma_{100}$= -0.105 (equivalent to an odds ratio of 0.9), while the simulated fixed intercept was defined on the log-odds scale as $\gamma_{000}$= -2.0 (equivalent to a probability of approximately 0.12). A total of 30 hospitals \[$H$\] were simulated, each with a pre-determined proportion of the overall sample $N$. The total number of clinicians \[$C$\] at each hospital was randomly generated by drawing from *Binomial*(100, 0.1) with assignment to each hospital applied after sorting both hospitals and clinician sizes to allow for realistic and proportional "staffing ratios." Probability of compliant prophylaxis (the exposure of interest) was determined for each patient assuming a population-level probability of 0.5 (log odds = 0) with both hospital and clinician level random intercepts drawn from $\textit{Normal }(0, \sigma^2)$. For the purposes of this simulation we did not explicitly include any additional patient-level predictors of treatment allocation (e.g., the design stage model). The probability of receipt of compliant prophylaxis was calculated for each patient, and exposure allocation was determined by drawing from $\textit{Bernoulli }(p_{compliant})$. Clinician- and hospital-level random intercepts ($U_{0ch}$ and $V_{00h}$) and slopes ($U_{1ch}$ and $V_{10h}$) were generated by drawing from the multivariate normal distribution. A formulaic representation of the data generating process is outlined below.
 
