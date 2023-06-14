@@ -728,7 +728,7 @@ $$
 
 \noindent for $i = 1, \ldots, n_{ch}$, $c = 1, \ldots, C_h$, and $h = 1, \ldots, H$. We then iteratively varied the sample size ($N$ = 1000, 10,000, 100,000), and for each value of $N$ fit 50 Bayesian outcome models with the structure and priors as outlined in the outcome modeling section. The basic results of the stimulation are shown in the plots below. @fig-power-facet shows posterior distributions of the odds ratio for the fixed effect estimates ($\gamma_{100}$) accompanied by their 95% credible intervals.
 
-```{r fig-power-facet, echo=FALSE, dpi=600, fig.height=6, fig.width=10, fig.align='center', cache=TRUE, fig.cap="Precision simulation results. Each facet represents a different total sample size (N). For each facet (N), 50 simulations were performed, and each is represented by the posterior median odds ratio (point) and 95% credible intervals (lines), ordered by median OR. The red line marks OR = 1 (no effect) while the blue line marks OR = 0.9 (the true simulated effect). The N = 100,000 facet contains an inset to more easily display the precision of these estimates around the true simulated value."}
+```{r fig-power-facet, echo=FALSE, dpi=600, fig.height=6, fig.width=9, fig.align='center', cache=TRUE, fig.cap="Precision simulation results. Each facet represents a different total sample size (N). For each facet (N), 50 simulations were performed, and each is represented by the posterior median odds ratio (point) and 95% credible intervals (lines), ordered by median OR. The red line marks OR = 1 (no effect) while the blue line marks OR = 0.9 (the true simulated effect). The N = 100,000 facet contains an inset to more easily display the precision of these estimates around the true simulated value."}
 
 ## Custom annotation function
 ## From https://www.blopig.com/blog/2019/08/combining-inset-plots-with-facets-using-ggplot2/
@@ -785,7 +785,7 @@ main_plot +
 
 In these simulations we find that the precision in our effect estimate of interest rapidly increases as sample size moves from 1,000 to 100,000 at which point all 95% credible intervals no longer include OR = 1. As an alternative visual representation of the precision of these estimates we can examine the distribution of their widths (on the OR scale). This is shown in @fig-power-width below.
 
-```{r fig-power-width, echo=FALSE, dpi=600, fig.height=4, fig.width=10, fig.align='center', cache=TRUE, fig.cap="Precision simulation results. Again, each facet represents a different total sample size (N). Here we show the distribution of the widths of the 95% credible interval for the OR, an alternative metric for assessing the precision of our estimates. Facets for N = 10,000 and N = 100,000 contain insets to more clearly show the distribution of widths for these cases."}
+```{r fig-power-width, echo=FALSE, dpi=600, fig.height=4, fig.width=9, fig.align='center', cache=TRUE, fig.cap="Precision simulation results. Again, each facet represents a different total sample size (N). Here we show the distribution of the widths of the 95% credible interval for the OR, an alternative metric for assessing the precision of our estimates. Facets for N = 10,000 and N = 100,000 contain insets to more clearly show the distribution of widths for these cases."}
 
 main_plot <- 
   ggplot(data = power_sims,
