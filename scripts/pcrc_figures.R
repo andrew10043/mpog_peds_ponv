@@ -212,18 +212,18 @@ interaction_plot <-
   scale_x_discrete(labels = count_labels) + 
   scale_y_continuous(breaks = seq(0, 0.5, by = 0.1)) +
   coord_cartesian(ylim = c(0, 0.5)) + 
-  theme(axis.title.x = element_text(size = 28,
+  theme(axis.title.x = element_text(size = 20,
                                     margin = margin(15, 0, 0, 0)),
-        axis.title.y = element_text(size = 28,
+        axis.title.y = element_text(size = 20,
                                     margin = margin(0, 15, 0, 0)),
-        axis.text = element_text(size = 25),
-        legend.text = element_text(size = 18, face = "bold"),
-        legend.title = element_text(size = 18, face = "bold"),
-        legend.position = c(0.1, 0.89),
+        axis.text = element_text(size = 15),
+        legend.text = element_text(size = 12, face = "bold"),
+        legend.title = element_text(size = 12, face = "bold"),
+        legend.position = c(0.1, 0.85),
         legend.background = element_rect(fill = "white",
                                          color = "black",
                                          size = 0.2),
-        strip.text = element_text(size = 28, face = "bold"),
+        strip.text = element_text(size = 20, face = "bold"),
         strip.background = element_blank(),
         panel.spacing = unit(2, "lines"),
         panel.grid.major.x = element_blank(),
@@ -250,27 +250,27 @@ interaction_plot_arr <-
   coord_cartesian(ylim = c(-0.3, 0.3)) +
   scale_y_continuous(breaks = c(-0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3),
                      labels = c("-30%", "-20%", "-10%", "0%", "10%", "20%", "30%")) + 
-  theme(axis.title.x = element_text(size = 28,
+  theme(axis.title.x = element_text(size = 20,
                                     margin = margin(15, 0, 0, 0)),
-        axis.title.y = element_text(size = 28,
+        axis.title.y = element_text(size = 20,
                                     margin = margin(0, 15, 0, 0)),
-        axis.text = element_text(size = 25),
+        axis.text = element_text(size = 15),
         legend.position = c(0.09, 0.9),
         legend.background = element_rect(fill = "white",
                                          color = "black",
                                          size = 0.2),
-        strip.text = element_text(size = 28, face = "bold"),
+        strip.text = element_text(size = 20, face = "bold"),
         strip.background = element_blank(),
         panel.spacing = unit(2, "lines"),
         panel.grid.major.x = element_blank(),
         panel.background = element_rect(fill = NA, color = "black"),
         plot.caption = element_text(face = "italic", hjust = 0,
-                                    size = 14, margin = margin(10, 0, 0, 0)),
+                                    size = 10, margin = margin(10, 0, 0, 0)),
         plot.margin = margin(15, 15, 15, 15))
 
 interaction_grid <- plot_grid(interaction_plot, interaction_plot_arr, ncol = 1,
                               labels = c("A", "B"),
-                              label_size = 35)
+                              label_size = 25)
 
 # Patient-Specific Disributions
 
