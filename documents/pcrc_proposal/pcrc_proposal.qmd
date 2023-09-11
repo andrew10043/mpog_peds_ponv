@@ -40,8 +40,8 @@ abstract: |-
   Postoperative nausea and vomiting (PONV) is a frequent complication following general anesthesia in pediatric patients. PONV is associated with a number of negative patient outcomes including dehydration, pulmonary aspiration, delayed mobilization, risk for wound dehiscence, delayed discharge, and unanticipated hospital admission. Given its high incidence and associated costly outcomes, a systematic approach to reducing PONV through appropriate prophylaxis represents a key opportunity for optimization of patient care. Consensus guidelines for prophylaxis against PONV in pediatric patients recommend a risk-based approach, with escalation in the number of antiemetics based on a preoperative estimate of PONV risk. These recommendations have been translated into performance metrics, most notably by the Multicenter Perioperative Outcomes Group (MPOG) through the Anesthesiology Performance Improvement and Reporting Exchange (ASPIRE), which currently includes over 25 children’s hospitals. Despite widespread dissemination of this guideline-defined quality metric for PONV prophylaxis, the association between adherence to such a risk-based approach and clinical outcomes remains unknown. Further, while the consensus guidelines are based on a comprehensive collation of evidence surrounding PONV risk prediction and prophylaxis, this evidence base is not robust. Most notably, risk prediction in pediatric PONV is sparsely studied, and available risk models utilize suboptimal methods that leave them prone to misclassification and bias. Thus, it is important to objectively estimate how published national guidelines, based on the current landscape of pediatric PONV risk prediction, are associated with clinical outcomes.
 code-repo: "Replication materials for this proposal and project are available at <https://github.com/andrew10043/mpog_peds_ponv>"
 thanks: |-
-  This is a preliminary proposal prepared for review by the Perioperative Clinical Research Committee (PCRC).
-date: June 14, 2023
+  This is a revised proposal prepared for review by the Perioperative Clinical Research Committee (PCRC) following initial recommendation for electronic revisions.
+date: September 11, 2023
 keywords: 
   - postoperative nausea and vomiting
   - pediatric anesthesioloy
@@ -185,7 +185,7 @@ Using the Intraoperative Research Standard starting population, we will include 
 
 While the MPOG PONV-04 metric explicitly excludes patients under the age of three, this is not a shared exclusion with the formal published guidelines, which use age \< 3 as a single risk factor (rather than an exclusion from consideration for prophylaxis). To examine the association of interest and to understand the implications of the guidelines in this younger population, we will use this expanded cohort of all patients $\leq$ 17 years of age in addition to a more limited cohort using all MPOG PONV-04 specified criteria (e.g., age $\leq$ 3 years).
 
-We expect that some patients will have multiple anesthetic encounters, but the number of such patients is unknown. Following exploratory analysis to investigate the burden of repeated patients, we will either: (1) limit the population to index procedures for each individual MPOG participant ID or (2) attempt to extend our model to a four level model (patients, procedures, clinicians, hospitals). Given the likely large number of patients *without* multiple procedures (and thus high burden of singleton patient clusters) we expect the former approach will most likely be used.
+After presentation and discussion at the initial PCRC meeting, we have determined that an a priori four-level model (procedures, patients, clinicians, hospitals) will be our initial approach. If logistical limitations arise (computation time, etc.) we will consider utilizing an index case exclusion approach to remove one level from the model while not inappropriately modeling repeated patient encounters.
 
 ## Data Source
 
@@ -238,13 +238,14 @@ Covariates are outlined in the tables below. Each name is linked to its respecti
 
 Each patient is identified using a unique MPOG ID. Unless necessary due to small sample size, we will retain all original race categories as reported in the database.
 
-| Variable                                                                      | Type             | Definition / Description                              |
+| Variable                                                                      | Type             | Definition / Description                                                            |
 |-------------------|-------------------|----------------------------------|
-| [MPOG Patient ID](https://phenotypes.mpog.org/MPOG%20Patient%20ID)            | Character string | Unique patient identifier                             |
-| [Age](https://phenotypes.mpog.org/Age%20(Years))                              | Continuous       | Patient age in years                                  |
-| [Race](https://phenotypes.mpog.org/Race)                                      | Nominal          | Race or Ethnicity of the patient                      |
-| [Sex](https://phenotypes.mpog.org/Sex)                                        | Nominal          | Documented sex of the patient at the time of the case |
-| [ASA Physical Status Classification](https://phenotypes.mpog.org/ASA%20Class) | Ordinal          | ASA classification                                    |
+| [MPOG Patient ID](https://phenotypes.mpog.org/MPOG%20Patient%20ID)            | Character string | Unique patient identifier                                                           |
+| [Age](https://phenotypes.mpog.org/Age%20(Years))                              | Continuous       | Patient age in years                                                                |
+| [Race](https://phenotypes.mpog.org/Race)                                      | Nominal          | Race of the patient                                                                 |
+| Ethnicity                                                                     | Nominal          | Hispanic ethnicity indicator variable (derived from the MPOG "Race" variable above) |
+| [Sex](https://phenotypes.mpog.org/Sex)                                        | Nominal          | Documented sex of the patient at the time of the case                               |
+| [ASA Physical Status Classification](https://phenotypes.mpog.org/ASA%20Class) | Ordinal          | ASA classification                                                                  |
 
 : Basic Patient Level Variables (excluding PONV-related concepts) {tbl-colwidths="\[33,17,50\]"}
 
@@ -257,7 +258,7 @@ Each institution will be represented by a unique ID. Medical school and pediatri
 | [Institution](https://phenotypes.mpog.org/Institution)                                           | Character string | Unique institution identifier                                                                           |
 | [Medical School Affiliation](https://phenotypes.mpog.org/Medical%20School%20Affiliation)         | Nominal          | Indicates whether the case occurred at an institution affiliated with a medical school                  |
 | [Pediatric Hospital Affiliation](https://phenotypes.mpog.org/Pediatric%20Hospital%20Affiliation) | Nominal          | Indicates whether the case occurred at a Children's Hospital affiliated with an active MPOG institution |
-| [Hospital Bed Size](https://phenotypes.mpog.org/Hospital%20Bed%20Size)                           | Ordinal          | Categorical value indicating the bed-size for each hospital                                         |
+| [Hospital Bed Size](https://phenotypes.mpog.org/Hospital%20Bed%20Size)                           | Ordinal          | Categorical value indicating the bed-size for each hospital                                             |
 | [Location Tag](https://phenotypes.mpog.org/Location%20Tags)                                      | Nominal          | Used to identify cases occurring at ambulatory centers                                                  |
 
 : Center Level Variables {tbl-colwidths="\[33,17,50\]"}
@@ -267,7 +268,7 @@ Each institution will be represented by a unique ID. Medical school and pediatri
 Surgical procedures will be classified by surgical service (e.g., general surgery, neurosurgery, ENT, etc.) tags, with procedure text used to clarify any discrepancies and to further exclude specific procedure types. The *Anesthesia Technique* variables and *Airway Type* will be used to categorize cases based on airway management and anesthetic approach (e.g., GETA with epidural, LMA with block, etc.).
 
 | Variable                                                                                                                         | Type             | Definition / Description                                                                                                                |
-|------------------|------------------|------------------------------------|
+|-------------------|-------------------|------------------------------------|
 | Year of Procedure                                                                                                                | Ordinal          | Based on [surgery start date/time](https://phenotypes.mpog.org/Surgery%20Start%20Date!Time).                                            |
 | [Case Duration](https://phenotypes.mpog.org/Case%20Duration)                                                                     | Continuous       | Duration of time a patient is anesthetized (in minutes)                                                                                 |
 | [Procedure](https://phenotypes.mpog.org/Procedure%20Text)                                                                        | Character string | Textual description of the procedure                                                                                                    |
@@ -324,7 +325,7 @@ As we aim to estimate the causal effect of compliant prophylaxis on the incidenc
 
 The typical approach to confounder adjustment using propensity score weighting involves the sequential fitting of two frequentist statistical models. A design stage logistic regression model which is used to generate point estimates of propensity scores for each patient, which are then used to weight observations in the subsequent outcome model. Given the many benefits of Bayesian inference, an attractive alternative to this frequentist approach is to combine propensity score weighting with Bayesian outcome modeling. Among other potential advantages, this approach would allow for the propagation of uncertainty in the estimation of the propensity score model through to the outcome model. This represents an area of considerable debate, and while several approaches have been explored, *Liao* and *Zigler*[@RN1206] outlined a *pseudo-Bayesian* two-stage approach in which a propensity score model is estimated, and the outcome model is then fit many times using sampled weights from the posterior distribution of the propensity score model. Alternatively, the outcome model can iteratively sample from the posterior distribution of weights at each step in the MCMC algorithm, reducing the need to fit many thousands of outcome models. Unfortunately, even the latter approach becomes computationally difficult with larger samples sizes, particularly those present in large multicenter databases.
 
-More recently, *Nafa* and *Heiss*[@RN1230] have outlined an approach aimed and circumventing this issue by using only the location and scale of the propensity score weights in the outcome model and propagating the "uncertainty by placing a prior on the scale component of the weights." Here, they parameterize propensity score weights as:
+More recently, *Nafa* and *Heiss*[@RN1230] have outlined an approach aimed at circumventing this issue by using only the location and scale of the propensity score weights in the outcome model and propagating the "uncertainty by placing a prior on the scale component of the weights." Here, they parameterize propensity score weights as:
 
 $$
 \tilde{w}_{i} = \kappa_{i} + \lambda_{i}\cdot\pi(\lambda)
@@ -366,17 +367,7 @@ $$
 
 A number of authors have explored the topic of propensity score model construction in clustered data, using simulations to assess various combinations of approaches with respect to their ability to generate unbiased estimates. *Li* and colleagues showed that estimators ignoring clustering in *both* the propensity score model and outcome model had much larger bias than those considering clustering in at least one stage.[@RN1234] However, ignoring clustering in the outcome model appeared to be more detrimental than ignoring it in the propensity score model. Separately, *Fuentes* and colleagues extensively examined the properties of propensity score modeling approaches in multilevel data, including the application of various weighting techniques.[@RN1231] They showed that both fixed effects and *correctly specified* (i.e., inclusion of all relevant cluster-specific variables) random effects approaches to estimating propensity scores yielded unbiased results, however there is increased bias with a misspecified random effects model. With respect to covariate-by-cluster interactions (i.e., differential treatment allocation mechanisms across clusters), random slope/intercept models using overlap weights were most successful, however fixed effect approaches with overlap weights were also adequate when cluster size was large. Importantly, these simulations did not include correlated unmeasured cluster-level confounders, which would theoretically bias the random effects model.[@RN1231]
 
-Taken together, evidence from simulation studies appears to favor a fixed effects approach to specification of the propensity score model, as this avoids the likely scenario in which unmeasured cluster-level confounders lead to a biased estimate when using random effects models. However, a strictly fixed effects approach in the proposed setting is relatively unattractive given the fully nested nature of the clusters and the large number of clinician-level clusters, many of which may be quite small. One alternative may be a hybrid approach, in which hospital is modeled as a fixed effect, with nested random effects for clinician within hospitals. This allows for the advantage of fixed effects at the hospital-level (where unobserved cluster-level confounding is arguably more likely) while respecting the nested nature of the data generating process. Such a parameterization is shown below:
-
-$$
-\begin{aligned}
-\textit{logit }(p_{ich}){} &= \beta_{0ch} + \beta_{1}X_{ich} + \beta_{2}K_{ch} + \beta_{3}Z_{h}\\
-\beta_{0ch}{}               &= \delta_{00h} + U_{0ch}\\
-\delta_{00h}{}              &= \gamma_{000} + \theta_{00h}\\
-\end{aligned}
-$$
-
-\noindent where, $\beta_{0ch}$ is the hospital- and clinician- specific intercept which is, in turn composed of the population fixed intercept ($\gamma_{000}$), hospital-specific fixed intercept ($\theta_{00h}$), and clinician-specific random intercept ($U_{0ch}$). The remaining parameters are as previously described.
+Taken together, evidence from simulation studies appears to favor a either a fixed effects or random effects approach to specification of the propensity score model, with some variability in simulation studies as noted above. A strictly fixed effects approach in the proposed setting is relatively unattractive given the fully nested nature of the clusters and the large number of clinician-level clusters, many of which may be quite small. One alternative may be a hybrid approach, in which hospital is modeled as a fixed effect, with nested random effects for clinician within hospitals. However, based on input from the MPOG statistical review team, this approach was deemed suboptimal. Thus, we will plan to use a random effects propensity score model, with random intercepts at the patient, clinician, and hospital levels.
 
 Importantly, this group is separately submitting a PCRC proposal for a descriptive analysis of PONV prophylaxis compliance in which the relationships between individual-, clinician-, and hospital-level variables with compliant prophylaxis allocation will be extensively explored. Results from this modeling will be illuminating with respect to the ideal propensity score modeling approach and will help guide our eventual selection.
 
@@ -389,31 +380,35 @@ source("~/Desktop/projects/mpog_multi_ponv/scripts/pcrc_figures.R")
 pcrc_dag
 ```
 
-Assuming the hybrid approach described above, the propensity score model will be a multilevel, Bayesian Bernoulli model with fixed hospital level effects and random intercepts for clinicians within hospitals. Further addition of covariate-cluster interactions (either interaction terms between hospital-specific intercept and patient-level covariates, or random slopes for clinicians) will be considered based on initial descriptive analyses.
+The propensity score model will be a multilevel, Bayesian Bernoulli model with random intercepts at the patient, clinician, and hospital-levels. Further addition of covariate-cluster interactions (either interaction terms between hospital-specific intercept and patient-level covariates, or random slopes for clinicians) will be considered based on initial descriptive analyses.
 
 $$
 \begin{aligned}
-\textbf{Outcome: }{}        &\text{compliant}_{ich} \sim \textit{Bernoulli }(p_{ich})\\
-\textbf{Patient Level: }{}  &\text{logit}(p_{ich}) = \beta_{0ch} + \beta_{1}x_{1i} + \cdots + \beta_{j}x_{ji}\\
-\textbf{Clinician Level: }{}&\beta_{0ch} = \delta_{00h} + U_{0ch}\\
-\textbf{Hospital Level: }{} &\delta_{00h} = \gamma_{000} + \theta_{00h}\\
+\textbf{Outcome: }{}        &\text{compliant}_{pich} \sim \textit{Bernoulli }(p_{pich})\\
+\textbf{Procedure Level: }{}  &\text{logit}(p_{pich}) = \beta_{0ich} + \beta_{1}X_{pich} + \beta_{2}K_{ich} + \beta_{3}Z_{ch} + \beta_{4}W_{h} + \epsilon_{pich}\\
+\textbf{Patient Level: }{}&\beta_{0ich} = \delta_{00ch} + Q_{0ich}\\
+\textbf{Clinician Level: }{}&\delta_{00ch} = \theta_{000h} + U_{00ch}\\
+\textbf{Hospital Level: }{} &\theta_{000h} = \gamma_{0000} + V_{000h}\\
 \end{aligned}
 $$ with, $$
 \begin{aligned}
-U_{0c} &\sim \textit{Normal }(0, \sigma_{c}^2)\\
+Q_{0ich} &\sim \textit{Normal }(0, \sigma_{i}^2)\\
+U_{00ch} &\sim \textit{Normal }(0, \sigma_{c}^2)\\
+V_{000h} &\sim \textit{Normal }(0, \sigma_{h}^2)\\
 \end{aligned}
 $$
 
-\noindent where, $\beta_{0ch}$ represents the clinician and hospital specific intercept, composed of a fixed population intercept ($\gamma_{000}$), fixed hospital-level intercept ($\theta_{00h}$) and clinician-level random effects ($U_{0ch}$). $\beta_{1} \ldots \beta_{j}$ represent fixed effects coefficients for all included patient-level covariates. Continuous variables (e.g., age, duration of anesthesia, etc.) will be modeled using thin plate splines.
+\noindent where, $\beta_{0ich}$ represents the patient, clinician and hospital specific intercept, composed of a fixed population intercept ($\gamma_{0000}$), and patient, clinician, and hospital-level random effects ($Q_{0ich}, U_{00ch}, V_{000h}$). $\beta_{1} \ldots \beta_{4}$ represent fixed effects coefficients for all included procedure, patient, clinician, and hospital-level covariates, with their associated procedure, patient, clinician and hospital-level covariates ($X_{pich}, K_{ich}, Z_{ch}, W_{h}$). Continuous variables (e.g., age, duration of anesthesia, etc.) will be modeled using thin plate splines.
 
 Priors for the propensity score model will be relatively uninformative:
 
 $$
 \begin{aligned}
 \beta_{j}{}    &\sim \textit{Normal }(0, 1.5)\\
-\theta_{00h}{} &\sim \textit{Normal }(0, 1.5)\\
-\gamma_{000}{} &\sim \textit{Normal }(0, 1.5)\\
+\gamma_{0000}{} &\sim \textit{Normal }(0, 1.5)\\
+\sigma_{i}{}   &\sim \textit{Half-Cauchy }(0, 1)\\
 \sigma_{c}{}   &\sim \textit{Half-Cauchy }(0, 1)\\
+\sigma_{h}{}   &\sim \textit{Half-Cauchy }(0, 1)\\
 \end{aligned}
 $$
 
@@ -421,22 +416,23 @@ Following estimation of the propensity score model, posterior draws will be tran
 
 ### Outcome Model
 
-The primary outcome model will be a multilevel, propensity score weighted, Bayesian Bernoulli model with random intercepts and slopes for the coefficient of interest ($\beta_{compliant}$) at the hospital- and clinician-level. The full model can be represented as:
+Based on assumed causal associations and the prevalence of hospital and clinician-level practice pattern variability, the *a priori* fully-specified primary outcome model will be a multilevel, propensity score weighted, Bayesian Bernoulli model with random intercepts at the patient, clinician, and hospital-levels, and slopes for the coefficient of interest ($\beta_{compliant}$) at the hospital- and clinician-level. Random slopes are included at the hospital and clinician level to account for differential response to adequate prophylaxis amongst similar patients within clinician and hospital clusters that may not be fully captured by measured variables. This full model will be compared to more sparse models (e.g., removal of random slopes) with respect to predicted out of sample performance using the widely applicable information criterion (WAIC). The full model can be represented as:
 
 $$
 \begin{aligned}
-\textbf{Outcome: }{}        &\text{PONV}_{ich} \sim \textit{Bernoulli }(p_{ich})^{\tilde{w}_{i}}\\
-\textbf{Patient Level: }{}  &\text{logit}(p_{ich}) = \beta_{0ch} + \beta_{1ch}x_{1i} + \beta_{2}x_{2i} + \cdots + \beta_{j}x_{ji}\\
-\textbf{Clinician Level: }{}&\beta_{0ch} = \delta_{00h} + U_{0ch}\\
+\textbf{Outcome: }{}        &\text{PONV}_{pich} \sim \textit{Bernoulli }(p_{pich})^{\tilde{w}_{i}}\\
+\textbf{Procedure Level: }{}  &\text{logit}(p_{pich}) = \beta_{0ich} + \beta_{1ch}x_{1p} + \beta_{2}x_{2p} + \cdots + \beta_{j}x_{jp} + \epsilon_{pich}\\
+\textbf{Patient Level: }{}&\beta_{0ich} = \delta_{00ch} + Q_{0ich}\\
+\textbf{Clinician Level: }{}&\delta_{00ch} = \theta_{000h} + U_{00ch}\\
                             &\beta_{1ch} = \delta_{10h} + U_{1ch}\\
-\textbf{Hospital Level: }{} &\delta_{00h} = \gamma_{000} + V_{00h}\\
-                            &\delta_{10h} = \gamma_{100} + V_{10h}\\
+\textbf{Hospital Level: }{} &\theta_{000h} = \gamma_{0000} + V_{000h}\\
+                            &\delta_{10h} = \eta_{100} + V_{10h}\\
 \end{aligned}
 $$ \noindent with, $$
 \tilde{w}_{i} = \kappa_{i} + \lambda_{i}\cdot\pi(\lambda)
 $$
 
-\noindent where, $\beta_{0ch}$ represents the clinician and hospital specific intercept, $\beta_{1ch}$ represents the clinician and hospital specific treatment effect (with $x_{1i}$ = compliance status), and $\beta_{2} \ldots \beta_{j}$ represent additional fixed effects coefficients. $U_{0ch}$ and $V_{00h}$ represent clinician-, and hospital-level random intercepts, respectively, while $U_{1ch}$ and $V_{10h}$ represent clinician- and hospital-level random slopes for the treatment effect. Finally, $\gamma_{000}$ is the fixed intercept and $\gamma_{100}$ is the fixed effect estimate for the treatment and $\tilde{w}_{i}$ is the propensity score weight term. The distribution and correlation structure between random intercepts and slopes at both the hospital and clinician level are described as:
+\noindent where, $\beta_{0ich}$ represents the patient, clinician and hospital specific intercept, $\beta_{1ch}$ represents the clinician and hospital specific treatment effect (with $x_{1p}$ = compliance status), and $\beta_{2} \ldots \beta_{j}$ represent additional fixed effects coefficients. $Q_{0ich}, U_{00ch}$ and $V_{000h}$ represent clinician-, and hospital-level random intercepts, respectively, while $U_{1ch}$ and $V_{10h}$ represent clinician- and hospital-level random slopes for the treatment effect. Finally, $\gamma_{0000}$ is the fixed intercept and $\eta_{100}$ is the fixed effect estimate for the treatment and $\tilde{w}_{i}$ is the propensity score weight term. The distribution and correlation structure between random intercepts and slopes at both the hospital and clinician level are described as:
 
 $$
 \begin{aligned}
@@ -490,13 +486,22 @@ $$
 \end{aligned}
 $$
 
+\noindent and,
+
+$$
+\begin{aligned}
+Q_{0ich} &\sim \textit{Normal }(0, \sigma_{i}^2)\\
+\end{aligned}
+$$
+
 \noindent Finally, priors for all parameters are outlined to complete the model:
 
 $$
 \begin{aligned}
 \beta_{j}{}    &\sim \textit{Normal }(0, 1)\\
-\gamma_{000}{} &\sim \textit{Normal }(-1.5, 0.75)\\
-\gamma_{100}{} &\sim \textit{Normal }(0, 1)\\
+\gamma_{0000}{} &\sim \textit{Normal }(-1.5, 0.75)\\
+\eta_{100}{} &\sim \textit{Normal }(0, 1)\\
+\sigma_{i}{} &\sim \textit{Half-Cauchy }(0, 1)\\
 \tau_{00}{}    &\sim \textit{Half-Cauchy }(0, 1)\\
 \tau_{01}{}    &\sim \textit{Half-Cauchy }(0, 1)\\
 \phi_{00}{}    &\sim \textit{Half-Cauchy }(0, 1)\\
@@ -630,7 +635,7 @@ Preliminary assessment of available observations using variable exclusion criter
 3.  Ages 0-17, broad procedural group: 1,546,639
 4.  Ages 0-17, limited procedural group: 1,523,473
 
-In the context of the proposed Bayesian analysis we have used a simulation-based approach to assess the impact on sample size on the anticipated precision of our estimates. A simulated multicenter data set of varying sample sizes \[$N$\] was constructed based on our preliminary single center analysis. Model structure is similar to that outlined in the above sections. The simulated fixed effect of compliant PONV prophylaxis was defined on the log-odds scale as $\gamma_{100}$= -0.105 (equivalent to an odds ratio of 0.9), while the simulated fixed intercept was defined on the log-odds scale as $\gamma_{000}$= -2.0 (equivalent to a probability of approximately 0.12). A total of 30 hospitals \[$H$\] were simulated, each with a pre-determined proportion of the overall sample $N$. The total number of clinicians \[$C$\] at each hospital was randomly generated by drawing from *Binomial*(100, 0.1) with assignment to each hospital applied after sorting both hospitals and clinician sizes to allow for realistic and proportional "staffing ratios." Probability of compliant prophylaxis (the exposure of interest) was determined for each patient assuming a population-level probability of 0.5 (log odds = 0) with both hospital and clinician level random intercepts drawn from $\textit{Normal }(0, \sigma^2)$. For the purposes of this simulation we did not explicitly include any additional patient-level predictors of treatment allocation (e.g., the design stage model). The probability of receipt of compliant prophylaxis was calculated for each patient, and exposure allocation was determined by drawing from $\textit{Bernoulli }(p_{compliant})$. Clinician- and hospital-level random intercepts ($U_{0ch}$ and $V_{00h}$) and slopes ($U_{1ch}$ and $V_{10h}$) were generated by drawing from the multivariate normal distribution. A formulaic representation of the data generating process is outlined below.
+In the context of the proposed Bayesian analysis we have used a simulation-based approach to assess the impact on sample size on the anticipated precision of our estimates. A simulated multicenter data set of varying sample sizes \[$N$\] was constructed based on our preliminary single center analysis. Model structure is similar to that outlined in the above sections. The simulated fixed effect of compliant PONV prophylaxis was defined on the log-odds scale as $\gamma_{100}$= -0.105 (equivalent to an odds ratio of 0.9), while the simulated fixed intercept was defined on the log-odds scale as $\gamma_{000}$= -2.0 (equivalent to a probability of approximately 0.12). A total of 30 hospitals \[$H$\] were simulated, each with a pre-determined proportion of the overall sample $N$. The total number of clinicians \[$C$\] at each hospital was randomly generated by drawing from *Binomial*(100, 0.1) with assignment to each hospital applied after sorting both hospitals and clinician sizes to allow for realistic and proportional "staffing ratios." Probability of compliant prophylaxis (the exposure of interest) was determined for each patient assuming a population-level probability of 0.5 (log odds = 0) with both hospital and clinician level random intercepts drawn from $\textit{Normal }(0, \sigma^2)$. For the purposes of this simulation we did not explicitly include any additional patient-level predictors of treatment allocation (e.g., the design stage model). The probability of receipt of compliant prophylaxis was calculated for each patient, and exposure allocation was determined by drawing from $\textit{Bernoulli }(p_{compliant})$. Clinician- and hospital-level random intercepts ($U_{0ch}$ and $V_{00h}$) and slopes ($U_{1ch}$ and $V_{10h}$) were generated by drawing from the multivariate normal distribution. A formulaic representation of the data generating process is outlined below. Note that these power analyses were conducted prior to consideration of a full four-level model (procedures, patients, clinicians, hospitals).
 
 $$
 \begin{aligned}
@@ -844,7 +849,7 @@ All analyses, data visualization, and reporting will be performed using R (versi
 
 ## Major Threats to Inference & Mitigation Strategies
 
-In this retrospective analysis of PONV prophylaxis, the major threat to inference is the presence of confounding by indication given the non-randomized allocation of prophylaxis. As previously discussed, we will use a pseudo-Bayesian approach to propensity score weighting to attempt to account for *measured* confounding. Importantly, the presence of unmeasured (or unaccounted for) confounders is always plausible in such an analysis. By using a thoughtfully created causal DAG (@fig-dag) with expert collaborator input we aim to most appropriately account for confounding while acknowledging that truly unmeasured confounders may still exist.
+In this retrospective analysis of PONV prophylaxis, the major threat to inference is the presence of confounding by indication given the non-randomized allocation of prophylaxis. As previously discussed, we will use a pseudo-Bayesian approach to propensity score weighting to attempt to account for *measured* confounding. Importantly, the presence of unmeasured (or unaccounted for) confounders is always plausible in such an analysis. By using a thoughtfully created causal DAG (@fig-dag) with expert collaborator input we aim to most appropriately account for confounding while acknowledging that truly unmeasured confounders may still exist. We will also plan to explore the possibility of a Bayesian adaptation of the E-value to quantify the strength of an unmeasured confounder that would be required to appreciably change the causal association between our exposure of and outcomes of interest.
 
 # Preliminary Data Analyses
 
