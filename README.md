@@ -9,3 +9,5 @@ This repository will house all reproducibility materials related to the proposal
 * **May 20, 2023**: proposal submitted
 * **June 5, 2023**: initial feedback received
 * **June 14, 2023**: proposal re-submitted
+* **August 14, 2023**: presentation at PCRC meeting; accepted with electronic revisions
+* **September 11, 2023**: proposal with electronic revisions submitted
